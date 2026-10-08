@@ -5,6 +5,7 @@ import { archivo, jetbrainsMono } from "@/lib/fonts";
 import { isLocale, locales } from "@/lib/i18n";
 import { themeScript } from "@/lib/theme";
 import { Footer } from "@/components/Footer/Footer";
+import { PointerEffects } from "@/components/PointerEffects/PointerEffects";
 import "../globals.css";
 
 // Build a static version of every page for each language. Any other value in
@@ -43,6 +44,7 @@ export default async function LocaleLayout({
         </a>
         {children}
         <Footer locale={locale} />
+        <PointerEffects />
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 /*
- * Global styles: design tokens, a small reset and base typography.
- * Component styles live next to each component in *.module.css files.
+ * Global styles: design tokens, a small reset, base typography and the shared
+ * motion system. Component styles live next to each component in
+ * *.module.css files.
  */
 
 /* -------------------------------------------------------------------------- */
@@ -28,6 +29,11 @@
   --response: light-dark(#0b6e5b, #5ed3b6);
   --focus: var(--request);
 
+  /* Light from above on raised panels, and shadows tinted with the accent
+     instead of plain black. */
+  --edge-highlight: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.07));
+  --shadow-tint: color-mix(in srgb, var(--request) 38%, transparent);
+
   --font-body: var(--font-archivo), system-ui, sans-serif;
   --font-code: var(--font-mono), ui-monospace, monospace;
 
@@ -42,6 +48,11 @@
 
   /* Shared timing for hover, focus and press feedback. */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layers, from bottom to top. */
+  --z-header: 50;
+  --z-skip-link: 60;
+  --z-grain: 1000;
 }
 
 :root[data-theme="light"] {
@@ -67,6 +78,14 @@ html {
   text-size-adjust: 100%;
 }
 
+/* On wide screens the header sticks to the top, so anchor links stop below
+   it instead of under it. */
+@media (min-width: 48rem) {
+  html {
+    scroll-padding-top: 6rem;
+  }
+}
+
 body {
   margin: 0;
   min-height: 100dvh;
@@ -76,6 +95,10 @@ body {
   font-size: 1.0625rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--request) 28%, transparent);
 }
 
 h1,
@@ -143,7 +166,7 @@ body::after {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: var(--z-grain);
   pointer-events: none;
   opacity: 0.045;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -197,7 +220,7 @@ body::after {
   position: absolute;
   top: 0.75rem;
   left: 0.75rem;
-  z-index: 10;
+  z-index: var(--z-skip-link);
   padding: 0.6rem 1rem;
   border-radius: var(--radius);
   background: var(--ink);
@@ -208,4 +231,206 @@ body::after {
 
 .skip-link:focus {
   transform: none;
+}
+
+/* A short arrow under section headings: a "message" in the style of the
+   sequence diagram. It draws itself when the heading scrolls into view. */
+.heading-arrow {
+  position: relative;
+  display: block;
+  width: 4.5rem;
+  height: 2px;
+  margin-top: 1rem;
+  background: var(--request);
+  transform-origin: left;
+}
+
+.heading-arrow::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: -4px;
+  border-block: 5px solid transparent;
+  border-left: 9px solid var(--request);
+}
+
+/* Text links that underline from left to right on hover. A thin underline is
+   always there, so the link never depends on colour alone. */
+.link {
+  text-decoration: none;
+  background:
+    linear-gradient(currentColor, currentColor) 0 100% / 0% 2px no-repeat,
+    linear-gradient(
+        color-mix(in srgb, currentColor 35%, transparent),
+        color-mix(in srgb, currentColor 35%, transparent)
+      )
+      0 100% / 100% 1px no-repeat;
+  padding-bottom: 0.1em;
+  transition:
+    background-size 350ms var(--ease-out),
+    color 200ms var(--ease-out);
+}
+
+.link:hover {
+  background-size:
+    100% 2px,
+    100% 1px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Motion system                                                              */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * Everything below runs only when the visitor has not asked for reduced
+ * motion. Scroll-linked effects use CSS scroll-driven animations
+ * (animation-timeline), which run off the main thread and need no
+ * JavaScript; browsers without them simply show the finished state.
+ *
+ * Components opt in with data attributes:
+ *   data-reveal        fades and rises into place as it scrolls into view
+ *   data-reveal-delay  shifts the reveal a little later (for staggering)
+ *   data-draw          scales in from the left (lines and arrows)
+ * Pointer effects (data-spotlight, data-tilt, data-magnetic) are set up by
+ * the PointerEffects component.
+ */
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    [data-reveal] {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry calc(5% + var(--stagger, 0) * 7%) entry
+        calc(60% + var(--stagger, 0) * 7%);
+    }
+
+    [data-draw],
+    .heading-arrow {
+      animation: draw-in linear both;
+      animation-timeline: view();
+      animation-range: entry 30% entry 100%;
+    }
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(2.25rem);
+  }
+}
+
+@keyframes draw-in {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* Spotlight: a soft light follows the pointer across a panel and lights up
+   its border. --mx and --my are set by PointerEffects. */
+[data-spotlight] {
+  position: relative;
+  isolation: isolate;
+}
+
+[data-spotlight]::before,
+[data-spotlight]::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 400ms var(--ease-out);
+}
+
+/* The glow on the surface, under the content. */
+[data-spotlight]::before {
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    28rem circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--request) 9%, transparent),
+    transparent 60%
+  );
+}
+
+/* The glow on the 1px border ring only (the mask cuts out the inside). */
+[data-spotlight]::after {
+  inset: -1px;
+  padding: 1px;
+  background: radial-gradient(
+    20rem circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--request) 75%, transparent),
+    transparent 55%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
+[data-spotlight]:hover::before,
+[data-spotlight]:hover::after {
+  opacity: 1;
+}
+
+/* Tilt: the panel turns slightly towards the pointer. */
+[data-tilt] {
+  transform: perspective(1200px) rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg));
+  transition: transform 700ms var(--ease-out);
+}
+
+[data-tilt][data-pointer-inside] {
+  transition-duration: 150ms;
+}
+
+/* Magnetic: the element is pulled a little towards the pointer. It uses the
+   separate `translate` property, so `transform` stays free for press
+   feedback (scale). */
+[data-magnetic] {
+  translate: var(--tx, 0px) var(--ty, 0px);
+  transition: translate 450ms var(--ease-out);
+}
+
+[data-magnetic][data-pointer-inside] {
+  transition-duration: 120ms;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Page transitions                                                           */
+/* -------------------------------------------------------------------------- */
+
+/* Moving between the English and Croatian pages cross-fades instead of
+   flashing white (cross-document view transitions; other browsers just load
+   the page). */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
+/* Theme switch: the new theme grows as a circle from the theme button. The
+   class is set by ThemeToggle only for the duration of the switch, so page
+   navigations keep the default cross-fade. */
+:root.theme-transition::view-transition-old(root),
+:root.theme-transition::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root.theme-transition::view-transition-new(root) {
+  animation: theme-reveal 650ms var(--ease-out);
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 0));
+  }
+  to {
+    clip-path: circle(150vmax at var(--vt-x, 50%) var(--vt-y, 0));
+  }
 }
