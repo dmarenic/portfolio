@@ -46,3 +46,6 @@ next-env.d.ts
 
 # local Claude Code settings
 .claude/settings.local.json
+
+# drafts waiting for review (not part of the site)
+/drafts/
