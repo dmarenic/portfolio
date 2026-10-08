@@ -1,0 +1,38 @@
+.text {
+  max-width: 38rem;
+  color: var(--muted);
+}
+
+/* The email address is the main action of the section, set large. */
+.email {
+  display: inline-block;
+  margin-top: 1rem;
+  /* Sized so the whole address fits on one line, down to 360 px screens. */
+  font-size: clamp(1.05rem, 4.4vw, 2.6rem);
+  font-weight: 800;
+  font-stretch: 118%;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em;
+}
+
+.email:hover {
+  color: var(--request);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.75rem;
+  margin-top: 1.5rem;
+  padding: 0;
+  list-style: none;
+  font-weight: 600;
+}
+
+.links a {
+  display: inline-block;
+  padding-block: 0.35rem;
+}
