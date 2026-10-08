@@ -39,8 +39,16 @@ export const profile = {
   email: "dominik.marenic@gmail.com",
   github: "https://github.com/dmarenic",
   linkedin: "https://www.linkedin.com/in/dominik-marenic/",
-  // Set to an object { src, alt } once the photo is in public/images.
-  photo: null as { src: string; alt: Localized } | null,
+  // Shown in the About section. Set to null to hide it.
+  photo: {
+    src: "/images/dominik-marenic.jpg",
+    width: 1125,
+    height: 2000,
+    alt: {
+      en: "Dominik Marenić leaning on a wooden railing above a seaside village of colourful houses",
+      hr: "Dominik Marenić naslonjen na drvenu ogradu iznad primorskog mjesta sa šarenim kućama",
+    },
+  } as { src: string; width: number; height: number; alt: Localized } | null,
   // CV files offered on each language version of the site.
   cv: {
     en: [
@@ -429,6 +437,37 @@ export const projects: Project[] = [
   },
 ];
 
+// Drawn instead of a screenshot for Blue Pulse (the app shows club crests,
+// which must not appear on this site). Layers are taken from the app's README.
+export const bluePulseArchitecture = {
+  layers: [
+    { name: "Jetpack Compose", role: { en: "screens", hr: "zasloni" } },
+    {
+      name: "ViewModel",
+      role: { en: "StateFlow of UiState", hr: "StateFlow s UiState" },
+    },
+    {
+      name: "Repository",
+      role: { en: "picks the data source", hr: "bira izvor podataka" },
+    },
+  ],
+  sources: [
+    {
+      name: "Retrofit",
+      role: { en: "TheSportsDB API", hr: "TheSportsDB API" },
+    },
+    {
+      name: "Firebase",
+      role: { en: "Auth, Firestore", hr: "Auth, Firestore" },
+    },
+    { name: "Room", role: { en: "offline cache", hr: "offline predmemorija" } },
+  ],
+  caption: {
+    en: "How data moves through Blue Pulse. Fixtures and players come from the API, then from the Room cache, then from built-in data, so the screens are never empty.",
+    hr: "Kako podaci putuju kroz Blue Pulse. Utakmice i igrači dolaze s API-ja, zatim iz Room predmemorije, pa iz ugrađenih podataka, zato zasloni nikad nisu prazni.",
+  },
+};
+
 /* -------------------------------------------------------------------------- */
 /* Skills                                                                     */
 /* -------------------------------------------------------------------------- */
@@ -468,6 +507,8 @@ export const skills = {
       en: "Each filled cell names how the technology is used in that project.",
       hr: "Svaka popunjena ćelija pokazuje kako je tehnologija korištena u tom projektu.",
     },
+    technology: { en: "Technology", hr: "Tehnologija" },
+    notUsed: { en: "Not used", hr: "Nije korišteno" },
     // Every row is a technology; a cell names what the project uses it for.
     // Cell text is a technical name, so it reads the same in both languages.
     rows: [
@@ -554,5 +595,12 @@ export const contact = {
   text: {
     en: "Email is the best way to reach me. You can also find me on LinkedIn and GitHub.",
     hr: "Najlakše ćete me dobiti e-poštom. Možete me pronaći i na LinkedInu i GitHubu.",
+  },
+};
+
+export const footer = {
+  builtWith: {
+    en: "Built with Next.js and TypeScript. No cookies, no tracking.",
+    hr: "Izrađeno u Next.jsu i TypeScriptu. Bez kolačića i praćenja.",
   },
 };
