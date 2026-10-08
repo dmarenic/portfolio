@@ -1,38 +1,13 @@
 /* -------------------------------------------------------------------------- */
-/* Project articles                                                           */
+/* Shared project text                                                        */
 /* -------------------------------------------------------------------------- */
 
-.project {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-  gap: 1.75rem 2.5rem;
-  padding-block: 2.5rem;
-}
-
-.project:first-child {
-  padding-top: 0;
-}
-
-.project + .project {
-  border-top: 1px solid var(--line);
-}
-
-@media (max-width: 74.99rem) {
-  .project {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 .name {
-  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  font-size: clamp(1.45rem, 1.15rem + 1.1vw, 1.9rem);
   font-weight: 800;
   font-stretch: 118%;
   line-height: 1.1;
   letter-spacing: -0.02em;
-}
-
-.featured .name {
-  font-size: clamp(1.8rem, 1.3rem + 2vw, 2.6rem);
 }
 
 .context {
@@ -98,11 +73,20 @@
   background: var(--ink);
   color: var(--paper);
   text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 200ms var(--ease-out),
+    color 200ms var(--ease-out),
+    transform 120ms var(--ease-out);
 }
 
 .links .primaryLink:hover {
   background: var(--request);
   color: var(--surface);
+}
+
+.links .primaryLink:active {
+  transform: translateY(1px) scale(0.98);
 }
 
 .note {
@@ -111,19 +95,116 @@
   font-size: 0.875rem;
 }
 
-.visual {
-  align-self: start;
+/* -------------------------------------------------------------------------- */
+/* Featured project: wide screenshot, text panel overlapping its lower edge   */
+/* -------------------------------------------------------------------------- */
+
+.featuredImage {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 8;
+  object-fit: cover;
+  object-position: top;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-large);
+  /* A soft shadow tinted with the accent colour, not plain black. */
+  box-shadow: 0 2.5rem 4rem -2.5rem
+    color-mix(in srgb, var(--request) 45%, transparent);
 }
 
-/* Screenshots are shown in a 4:3 frame, cropped from the top. */
-.screenshot {
+.featuredPanel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 1.5rem clamp(2rem, 4vw, 3.5rem);
+  margin: -5rem clamp(1rem, 4vw, 3.5rem) 0;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-large);
+  background: var(--surface);
+}
+
+.featuredPanel .name {
+  font-size: clamp(1.8rem, 1.3rem + 2vw, 2.6rem);
+}
+
+@media (max-width: 59.99rem) {
+  .featuredPanel {
+    grid-template-columns: minmax(0, 1fr);
+    margin: -2.5rem 0.5rem 0;
+  }
+
+  .featuredImage {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Other projects, side by side                                               */
+/* -------------------------------------------------------------------------- */
+
+.others {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3rem clamp(2rem, 4vw, 3.5rem);
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+}
+
+@media (max-width: 59.99rem) {
+  .others {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.project {
+  display: grid;
+  align-content: start;
+  gap: 1.5rem;
+}
+
+/* Side by side, both projects share the parent's two rows (subgrid), so the
+   text of both starts at the same height even though the screenshot and the
+   diagram are not equally tall. */
+@media (min-width: 60rem) {
+  .others {
+    grid-template-rows: auto auto;
+  }
+
+  .project {
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+  }
+}
+
+.image {
   width: 100%;
   height: auto;
   aspect-ratio: 4 / 3;
   object-fit: cover;
   object-position: top;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-large);
+}
+
+/* Screenshots and the diagram ease in as they scroll into view, in browsers
+   that support scroll-driven animations. No JavaScript is involved. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .featuredImage,
+    .image,
+    .architecture {
+      animation: settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+  }
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -133,7 +214,7 @@
 .architecture {
   padding: 1.25rem;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-large);
   background: var(--surface);
 }
 
@@ -151,7 +232,7 @@
   gap: 0.15rem 1rem;
   padding: 0.65rem 0.9rem;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--paper);
 }
 

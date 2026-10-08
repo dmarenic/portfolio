@@ -1,13 +1,7 @@
 .groups {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  gap: 1.5rem 2.5rem;
-}
-
-@media (max-width: 47.99rem) {
-  .groups {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  gap: 1.5rem;
+  margin-top: 1.75rem;
 }
 
 .groupTitle {
@@ -19,7 +13,7 @@
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
   margin-top: 0.6rem;
   padding: 0;
   list-style: none;
@@ -28,16 +22,16 @@
 .tags li {
   padding: 0.3rem 0.7rem;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--radius-small);
   background: var(--surface);
   font-size: 0.95rem;
 }
 
 .matrixTitle {
-  margin-top: 3rem;
   font-size: 1.25rem;
   font-weight: 700;
   font-stretch: 112%;
+  line-height: 1.25;
 }
 
 .note {
@@ -63,7 +57,7 @@
 .matrix th,
 .matrix td {
   padding: 0.55rem 0.7rem;
-  border-radius: 6px;
+  border-radius: var(--radius-small);
   text-align: left;
   vertical-align: middle;
 }
@@ -82,10 +76,11 @@
   background: color-mix(in srgb, var(--ink) 4%, var(--paper));
 }
 
-/* A filled cell: the technology is used in this project. */
+/* A filled cell: the technology is used in this project. Same accent as the
+   rest of the page. */
 .matrix td.used {
-  background: color-mix(in srgb, var(--response) 14%, var(--surface));
-  box-shadow: inset 3px 0 0 var(--response);
+  background: color-mix(in srgb, var(--request) 12%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--request);
 }
 
 @media (max-width: 47.99rem) {
@@ -105,6 +100,6 @@
   }
 
   .matrix td.used {
-    box-shadow: inset 2px 0 0 var(--response);
+    box-shadow: inset 2px 0 0 var(--request);
   }
 }

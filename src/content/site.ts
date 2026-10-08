@@ -28,13 +28,16 @@ export const profile = {
     en: "Junior backend and full stack developer",
     hr: "Junior backend i full stack programer",
   },
-  intro: {
-    en: "I build web applications in TypeScript and Python, from the database schema to the interface. I graduated in computer engineering from FERIT Osijek and I'm looking for my first job on a team where I can learn from experienced developers.",
-    hr: "Izrađujem web aplikacije u TypeScriptu i Pythonu, od sheme baze podataka do sučelja. Završio sam studij računarstva na FERIT-u u Osijeku i tražim prvi posao u timu u kojem mogu učiti od iskusnijih programera.",
-  },
-  availability: {
-    en: "Osijek, Croatia. Open to work in Osijek or remote.",
-    hr: "Osijek, Hrvatska. Posao u Osijeku ili na daljinu.",
+  // The hero text under the name: two short sentences, at most 20 words.
+  summary: {
+    lead: {
+      en: "Junior backend and full stack developer from Osijek, Croatia.",
+      hr: "Junior backend i full stack programer iz Osijeka.",
+    },
+    text: {
+      en: "Looking for my first role, in Osijek or remote.",
+      hr: "Tražim prvi posao, u Osijeku ili na daljinu.",
+    },
   },
   email: "dominik.marenic@gmail.com",
   github: "https://github.com/dmarenic",
@@ -91,12 +94,15 @@ export const ui = {
       en: "Dominik Marenić, home page",
       hr: "Dominik Marenić, početna stranica",
     },
-    items: [
-      { href: "#projects", label: { en: "Projects", hr: "Projekti" } },
-      { href: "#skills", label: { en: "Skills", hr: "Vještine" } },
-      { href: "#experience", label: { en: "Experience", hr: "Iskustvo" } },
-      { href: "#contact", label: { en: "Contact", hr: "Kontakt" } },
-    ],
+    // One label per destination, used in the navigation and in the hero
+    // buttons, so the same action always has the same name.
+    labels: {
+      projects: { en: "Projects", hr: "Projekti" },
+      skills: { en: "Skills", hr: "Vještine" },
+      experience: { en: "Experience", hr: "Iskustvo" },
+      contact: { en: "Contact", hr: "Kontakt" },
+    },
+    items: ["projects", "skills", "experience", "contact"] as const,
   },
   languageSwitch: {
     // The link always shows the other language, written in that language.
@@ -108,9 +114,11 @@ export const ui = {
     toDark: { en: "Switch to dark theme", hr: "Uključi tamnu temu" },
     unknown: { en: "Switch theme", hr: "Promijeni temu" },
   },
-  hero: {
-    primaryAction: { en: "See my projects", hr: "Pogledaj projekte" },
-    secondaryAction: { en: "Email me", hr: "Pošalji e-poštu" },
+  // Icon links in the header (the icon is visible, this text is for screen
+  // readers and the tooltip).
+  social: {
+    github: { en: "GitHub profile", hr: "GitHub profil" },
+    linkedin: { en: "LinkedIn profile", hr: "LinkedIn profil" },
   },
   diagram: {
     actors: {
@@ -255,12 +263,12 @@ export const about = {
   title: { en: "About", hr: "O meni" },
   paragraphs: [
     {
-      en: "I finished the professional undergraduate study of computer engineering at FERIT Osijek in 2026. For my bachelor's thesis I built a real-time multiplayer quiz on my own, from the PostgreSQL schema to the Next.js interface. During a summer internship I worked on a Flutter web app, partly on my own and partly with the team.",
-      hr: "Završio sam stručni prijediplomski studij računarstva na FERIT-u u Osijeku 2026. godine. Za završni rad samostalno sam izradio kviz za više igrača u stvarnom vremenu, od PostgreSQL sheme do sučelja u Next.jsu. Na ljetnoj stručnoj praksi radio sam na web aplikaciji u Flutteru, dijelom samostalno, a dijelom u timu.",
+      en: "I build web applications in TypeScript and Python, from the database schema to the interface. I finished the professional undergraduate study of computer engineering at FERIT Osijek in 2026, and for my bachelor's thesis I built a real-time multiplayer quiz on my own.",
+      hr: "Izrađujem web aplikacije u TypeScriptu i Pythonu, od sheme baze podataka do sučelja. Stručni prijediplomski studij računarstva na FERIT-u u Osijeku završio sam 2026. godine, a za završni rad samostalno sam izradio kviz za više igrača u stvarnom vremenu.",
     },
     {
-      en: "I'm looking for a junior backend or full stack role, in Osijek or remote. Most of all I want a job where I can learn with a mentor.",
-      hr: "Tražim posao junior backend ili full stack programera, u Osijeku ili na daljinu. Najviše mi znači posao na kojem mogu učiti uz mentora.",
+      en: "During a summer internship I worked on a Flutter web app, partly on my own and partly with the team. Now I'm looking for a junior backend or full stack role, in Osijek or remote, and most of all a job where I can learn with a mentor.",
+      hr: "Na ljetnoj stručnoj praksi radio sam na web aplikaciji u Flutteru, dijelom samostalno, a dijelom u timu. Sada tražim posao junior backend ili full stack programera, u Osijeku ili na daljinu, a najviše mi znači posao na kojem mogu učiti uz mentora.",
     },
     {
       en: "Outside of programming I train at the gym, watch TV series and watch football with friends.",
@@ -355,12 +363,12 @@ export const projects: Project[] = [
     },
     visual: {
       type: "image",
-      src: "/images/projects/trivia-lobby.png",
+      src: "/images/projects/trivia-leaderboard.png",
       width: 2880,
-      height: 2106,
+      height: 2482,
       alt: {
-        en: "Room lobby of the quiz: four players marked as ready, game settings and the room chat",
-        hr: "Predvorje sobe u kvizu: četiri spremna igrača, postavke partije i chat sobe",
+        en: "A quiz room during a question: the countdown, the question with four answers, the points the player just earned and the live room leaderboard",
+        hr: "Soba kviza tijekom pitanja: odbrojavanje, pitanje s četiri odgovora, upravo osvojeni bodovi i ljestvica sobe uživo",
       },
     },
   },
@@ -545,14 +553,18 @@ export const skills = {
 /* Experience and education                                                   */
 /* -------------------------------------------------------------------------- */
 
+export const experienceSection = {
+  title: { en: "Experience and education", hr: "Iskustvo i obrazovanje" },
+};
+
 export const experience = {
-  title: { en: "Experience", hr: "Iskustvo" },
+  title: { en: "Work", hr: "Radno iskustvo" },
   items: [
     {
       role: { en: "Internship", hr: "Stručna praksa" },
       organization: "GROW d.o.o.",
       place: "Novska",
-      period: { en: "July – August 2026", hr: "srpanj – kolovoz 2026." },
+      period: { en: "July-August 2026", hr: "srpanj-kolovoz 2026." },
       description: {
         en: "Worked on a Flutter web application that has not been released yet. I implemented user login and the connection to the backend API and added new features, partly on my own and partly with the team.",
         hr: "Radio sam na web aplikaciji u Flutteru koja još nije objavljena. Implementirao sam prijavu korisnika i povezivanje s API-jem te dodavao nove funkcionalnosti, dijelom samostalno, a dijelom u timu.",
@@ -581,7 +593,7 @@ export const education = {
         en: "Professional bachelor's degree in Computer Engineering (bacc. ing. comp.)",
         hr: "Prvostupnik (baccalaureus) inženjer računarstva (bacc. ing. comp.)",
       },
-      period: { en: "2023 – 2026", hr: "2023. – 2026." },
+      period: { en: "2023-2026", hr: "2023-2026" },
     },
   ],
 };

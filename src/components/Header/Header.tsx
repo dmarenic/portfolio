@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { GithubLogo } from "@phosphor-icons/react/dist/ssr/GithubLogo";
+import { LinkedinLogo } from "@phosphor-icons/react/dist/ssr/LinkedinLogo";
 import { profile, ui } from "@/content/site";
 import { type Locale, localePath, locales } from "@/lib/i18n";
 import { ThemeToggle } from "@/components/ThemeToggle/ThemeToggle";
@@ -30,16 +32,32 @@ export function Header({ locale, path }: HeaderProps) {
 
         <nav className={styles.nav} aria-label={ui.nav.label[locale]}>
           <ul className={styles.navList}>
-            {ui.nav.items.map((item) => (
-              <li key={item.href}>
+            {ui.nav.items.map((id) => (
+              <li key={id}>
                 {/* "/#projects" scrolls on the home page and navigates from other pages. */}
-                <a href={`${home}${item.href}`}>{item.label[locale]}</a>
+                <a href={`${home}#${id}`}>{ui.nav.labels[id][locale]}</a>
               </li>
             ))}
           </ul>
         </nav>
 
         <div className={styles.tools}>
+          <a
+            className={styles.iconLink}
+            href={profile.github}
+            aria-label={ui.social.github[locale]}
+            title={ui.social.github[locale]}
+          >
+            <GithubLogo size={22} aria-hidden="true" />
+          </a>
+          <a
+            className={styles.iconLink}
+            href={profile.linkedin}
+            aria-label={ui.social.linkedin[locale]}
+            title={ui.social.linkedin[locale]}
+          >
+            <LinkedinLogo size={22} aria-hidden="true" />
+          </a>
           <a
             className={styles.language}
             href={localePath(otherLocale, path)}

@@ -1,30 +1,39 @@
-.grid {
-  display: grid;
-  grid-template-columns: 13rem minmax(0, 1fr);
-  gap: 1.25rem 2.5rem;
-  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+.stacked,
+.rail {
+  padding-block: clamp(3rem, 7vw, 5.5rem) clamp(3.5rem, 8vw, 6rem);
   border-top: 1px solid var(--line);
 }
 
-.title {
-  align-self: start;
-  font-size: clamp(1.5rem, 1.2rem + 1vw, 1.9rem);
-  font-weight: 700;
-  font-stretch: 112%;
-  line-height: 1.15;
-  letter-spacing: -0.015em;
+.stacked {
+  display: grid;
+  gap: clamp(1.75rem, 3vw, 2.5rem);
 }
 
-/* On wide screens the heading stays in view while a long section scrolls. */
-@media (min-width: 60rem) {
-  .title {
-    position: sticky;
-    top: 1.5rem;
-  }
+.rail {
+  display: grid;
+  grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+  gap: 2rem clamp(2.5rem, 5vw, 4.5rem);
 }
 
 @media (max-width: 59.99rem) {
-  .grid {
+  .rail {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* In the rail layout the heading column stays in view on wide screens. */
+@media (min-width: 60rem) {
+  .rail .side {
+    position: sticky;
+    top: 1.5rem;
+    align-self: start;
+  }
+}
+
+.title {
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.4rem);
+  font-weight: 800;
+  font-stretch: 118%;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
 }

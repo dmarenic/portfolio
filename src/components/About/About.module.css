@@ -1,8 +1,10 @@
 .grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 20rem;
-  gap: 2rem 3rem;
-  align-items: start;
+  grid-template-columns: minmax(0, 28rem) minmax(0, 1fr);
+  gap: 2.5rem clamp(2.5rem, 6vw, 5.5rem);
+  align-items: center;
+  padding-block: clamp(3rem, 7vw, 5.5rem) clamp(3.5rem, 8vw, 6rem);
+  border-top: 1px solid var(--line);
 }
 
 @media (max-width: 59.99rem) {
@@ -11,24 +13,38 @@
   }
 }
 
-.text {
-  max-width: 38rem;
-}
-
-.text p + p {
-  margin-top: 1rem;
-}
-
 /* The original photo is tall (9:16); a 4:5 frame keeps the person and the
    houses behind them. */
 .photo {
   width: 100%;
-  max-width: 22rem;
+  max-width: 28rem;
   height: auto;
   aspect-ratio: 4 / 5;
   object-fit: cover;
   object-position: 65% 60%;
-  border-radius: 14px;
+  border-radius: var(--radius-large);
   /* Shown while the photo loads. */
   background: var(--line);
+}
+
+.title {
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.4rem);
+  font-weight: 800;
+  font-stretch: 118%;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.text {
+  max-width: 36rem;
+}
+
+.text p {
+  margin-top: 1rem;
+}
+
+.text p:first-of-type {
+  margin-top: 1.5rem;
+  font-size: 1.15rem;
+  line-height: 1.55;
 }
