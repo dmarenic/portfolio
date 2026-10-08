@@ -1,0 +1,9 @@
+# Generated or binary output
+.next
+out
+package-lock.json
+public
+
+# Local working files
+screenshots
+design-previews
