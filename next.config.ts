@@ -9,6 +9,30 @@ const nextConfig: NextConfig = {
 
   // Do not generate AGENTS.md (instructions for AI coding tools) on `next dev`.
   agentRules: false,
+
+  // English pages are built under /en (the [locale] segment), but they are
+  // published without the prefix. These two lists connect the two:
+  //
+  // redirects: someone who opens /en/... is sent to the short URL.
+  async redirects() {
+    return [
+      { source: "/en", destination: "/", permanent: true },
+      {
+        source: "/en/projects/:slug",
+        destination: "/projects/:slug",
+        permanent: true,
+      },
+    ];
+  },
+
+  // rewrites: the short URL shows the /en page without changing the address
+  // bar. Only English pages are listed, so /hr/... is never rewritten.
+  async rewrites() {
+    return [
+      { source: "/", destination: "/en" },
+      { source: "/projects/:slug", destination: "/en/projects/:slug" },
+    ];
+  },
 };
 
 export default nextConfig;
