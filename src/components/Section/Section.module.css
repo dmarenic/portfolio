@@ -1,0 +1,30 @@
+.grid {
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr);
+  gap: 1.25rem 2.5rem;
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  border-top: 1px solid var(--line);
+}
+
+.title {
+  align-self: start;
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 1.9rem);
+  font-weight: 700;
+  font-stretch: 112%;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+/* On wide screens the heading stays in view while a long section scrolls. */
+@media (min-width: 60rem) {
+  .title {
+    position: sticky;
+    top: 1.5rem;
+  }
+}
+
+@media (max-width: 59.99rem) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
