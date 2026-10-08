@@ -598,6 +598,21 @@ export const contact = {
   },
 };
 
+// The 404 page cannot know the visitor's language, so it shows both.
+export const notFoundPage = {
+  title: "Page not found | Stranica nije pronađena",
+  en: {
+    heading: "This page does not exist.",
+    text: "The link may be old or mistyped.",
+    link: "Go to the home page",
+  },
+  hr: {
+    heading: "Ova stranica ne postoji.",
+    text: "Poveznica je možda stara ili pogrešno upisana.",
+    link: "Idi na početnu stranicu",
+  },
+};
+
 export const footer = {
   builtWith: {
     en: "Built with Next.js and TypeScript. No cookies, no tracking.",

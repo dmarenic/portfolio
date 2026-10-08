@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
   // Do not generate AGENTS.md (instructions for AI coding tools) on `next dev`.
   agentRules: false,
 
+  experimental: {
+    // Lets src/app/global-not-found.tsx render the 404 page for addresses that
+    // match no route. It is needed because the root layout is under [locale].
+    globalNotFound: true,
+  },
+
   // English pages are built under /en (the [locale] segment), but they are
   // published without the prefix. These two lists connect the two:
   //

@@ -1,0 +1,55 @@
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  gap: 2.5rem;
+  min-height: 100vh;
+  padding-block: 4rem;
+}
+
+/* The status code, set in the same wide cut as the name on the home page. */
+.code {
+  font-size: clamp(5rem, 3rem + 10vw, 11rem);
+  font-weight: 800;
+  font-stretch: 125%;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: var(--request);
+}
+
+.messages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 2rem 3rem;
+  max-width: 52rem;
+}
+
+.heading {
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-stretch: 108%;
+  line-height: 1.25;
+}
+
+.text {
+  margin-top: 0.5rem;
+  color: var(--muted);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-top: 1rem;
+  padding-inline: 1.1rem;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  background: var(--request);
+  color: var(--surface);
+}
