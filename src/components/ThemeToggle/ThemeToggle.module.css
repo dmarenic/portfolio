@@ -10,6 +10,14 @@
   cursor: pointer;
 }
 
+.button {
+  transition: border-color 200ms var(--ease-out);
+}
+
 .button:hover {
   border-color: var(--ink);
+}
+
+.button:active {
+  transform: translateY(1px);
 }

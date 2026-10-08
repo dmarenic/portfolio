@@ -64,6 +64,7 @@
 /* Each event is a full-width button; the arrow inside it is positioned
    between two lifelines. */
 .row {
+  transition: background-color 150ms var(--ease-out);
   /* The label behind the event name uses the same colour as the row. */
   --row-bg: var(--surface);
   position: relative;
@@ -261,8 +262,16 @@
   cursor: pointer;
 }
 
+.replay {
+  transition: border-color 200ms var(--ease-out);
+}
+
 .replay:hover {
   border-color: var(--ink);
+}
+
+.replay:active {
+  transform: translateY(1px);
 }
 
 /* On narrow screens the caption takes the whole row and the button wraps

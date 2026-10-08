@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { CircleHalf } from "@phosphor-icons/react/dist/ssr/CircleHalf";
 import {
   getCurrentTheme,
   setTheme,
@@ -41,18 +42,7 @@ export function ThemeToggle({ labels }: ThemeToggleProps) {
       title={label}
       onClick={() => setTheme(getCurrentTheme() === "dark" ? "light" : "dark")}
     >
-      {/* Half-filled circle: the usual symbol for switching contrast. */}
-      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-        <circle
-          cx="12"
-          cy="12"
-          r="8.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-        <path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor" />
-      </svg>
+      <CircleHalf size={20} weight="bold" aria-hidden="true" />
     </button>
   );
 }

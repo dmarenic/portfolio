@@ -1,6 +1,7 @@
 "use client";
 
 import { type CSSProperties, useId, useState } from "react";
+import { ArrowCounterClockwise } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
 import type { DiagramActor } from "@/content/site";
 import styles from "./SequenceDiagram.module.css";
 
@@ -169,16 +170,7 @@ export function LiveDiagram({
           className={styles.replay}
           onClick={() => setRound((r) => r + 1)}
         >
-          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-            <path
-              d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <ArrowCounterClockwise size={16} weight="bold" aria-hidden="true" />
           {labels.replay}
         </button>
       </figcaption>
