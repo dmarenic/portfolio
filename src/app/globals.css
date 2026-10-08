@@ -33,7 +33,15 @@
 
   --page-max: 76rem;
   --gutter: clamp(1rem, 4vw, 3rem);
+
+  /* One radius rule for the whole site: small tags 6px, buttons and inputs
+     10px, panels and images 14px. */
+  --radius-small: 6px;
   --radius: 10px;
+  --radius-large: 14px;
+
+  /* Shared timing for hover, focus and press feedback. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root[data-theme="light"] {
@@ -61,7 +69,7 @@ html {
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-body);
@@ -73,6 +81,7 @@ body {
 h1,
 h2,
 h3,
+h4,
 p,
 ul,
 ol,
@@ -80,6 +89,21 @@ figure,
 dl,
 dd {
   margin: 0;
+}
+
+/* Headings break into lines of similar length; paragraphs avoid leaving a
+   single word on the last line. */
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+p,
+li,
+dd {
+  text-wrap: pretty;
 }
 
 img,
@@ -98,6 +122,9 @@ a {
   color: inherit;
   text-underline-offset: 0.2em;
   text-decoration-thickness: 1px;
+  transition:
+    color 200ms var(--ease-out),
+    text-decoration-thickness 200ms var(--ease-out);
 }
 
 a:hover {
@@ -107,6 +134,25 @@ a:hover {
 button {
   font: inherit;
   color: inherit;
+}
+
+/* Fine grain over the whole page, so flat colour areas get a little texture.
+   It sits on a fixed layer that ignores the pointer and never scrolls, which
+   keeps it cheap to draw. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-contrast: more) {
+  body::after {
+    display: none;
+  }
 }
 
 :focus-visible {
