@@ -49,3 +49,6 @@ next-env.d.ts
 
 # drafts waiting for review (not part of the site)
 /drafts/
+
+# third-party Claude Code skills installed locally (taste-skill, MIT)
+.claude/skills/
