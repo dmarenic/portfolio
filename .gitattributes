@@ -1,0 +1,9 @@
+# Keep LF line endings in the repository and working tree on every OS,
+# so Prettier and CI see the same files as local development.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.mp4 binary
