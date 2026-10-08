@@ -1,0 +1,86 @@
+.header {
+  padding-block: 1rem;
+}
+
+/* Wide screens: name | navigation | tools in one row.
+   Narrow screens: name and tools on the first row, navigation below. */
+.inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: "home nav tools";
+  align-items: center;
+  gap: 1rem 2rem;
+}
+
+.home {
+  grid-area: home;
+  font-weight: 800;
+  font-stretch: 125%;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.nav {
+  grid-area: nav;
+  justify-self: end;
+}
+
+.navList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.navList a {
+  display: inline-block;
+  padding-block: 0.5rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.navList a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.tools {
+  grid-area: tools;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.language {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-inline: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.language:hover {
+  border-color: var(--ink);
+}
+
+@media (max-width: 47.99rem) {
+  .inner {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "home tools"
+      "nav nav";
+    row-gap: 0.25rem;
+  }
+
+  .nav {
+    justify-self: start;
+  }
+
+  .navList {
+    gap: 0 1.25rem;
+  }
+}
