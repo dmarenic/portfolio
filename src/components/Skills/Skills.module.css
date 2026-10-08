@@ -1,0 +1,110 @@
+.groups {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 1.5rem 2.5rem;
+}
+
+@media (max-width: 47.99rem) {
+  .groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.groupTitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  padding: 0;
+  list-style: none;
+}
+
+.tags li {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  font-size: 0.95rem;
+}
+
+.matrixTitle {
+  margin-top: 3rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-stretch: 112%;
+}
+
+.note {
+  max-width: 40rem;
+  margin-top: 0.4rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Technology x project matrix                                                */
+/* -------------------------------------------------------------------------- */
+
+.matrix {
+  width: 100%;
+  margin-top: 1.25rem;
+  border-collapse: separate;
+  border-spacing: 4px;
+  table-layout: fixed;
+  font-size: 0.9rem;
+}
+
+.matrix th,
+.matrix td {
+  padding: 0.55rem 0.7rem;
+  border-radius: 6px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.matrix thead th {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.matrix tbody th {
+  font-weight: 600;
+}
+
+.matrix td {
+  background: color-mix(in srgb, var(--ink) 4%, var(--paper));
+}
+
+/* A filled cell: the technology is used in this project. */
+.matrix td.used {
+  background: color-mix(in srgb, var(--response) 14%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--response);
+}
+
+@media (max-width: 47.99rem) {
+  .matrix {
+    border-spacing: 3px;
+    font-size: 0.78rem;
+  }
+
+  .matrix th,
+  .matrix td {
+    padding: 0.45rem 0.35rem;
+    overflow-wrap: anywhere;
+  }
+
+  .matrix thead th {
+    font-size: 0.75rem;
+  }
+
+  .matrix td.used {
+    box-shadow: inset 2px 0 0 var(--response);
+  }
+}
