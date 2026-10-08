@@ -1,0 +1,140 @@
+.figure {
+  padding: 1.25rem 1.25rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+}
+
+/* Show the full diagram on wide screens and the short one on phones. */
+.narrow {
+  display: none;
+}
+
+@media (max-width: 39.99rem) {
+  .wide {
+    display: none;
+  }
+
+  .narrow {
+    display: block;
+  }
+}
+
+.caption {
+  padding: 0.75rem 0.25rem 0.25rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.actorBox {
+  fill: var(--paper);
+  stroke: var(--line);
+}
+
+.actorName {
+  fill: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.lifeline {
+  stroke: var(--line);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+}
+
+.event {
+  font-family: var(--font-code);
+  font-size: 14px;
+  font-weight: 500;
+  /* A thin outline in the panel colour keeps labels readable where they
+     cross a dashed lifeline. */
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+.narrow .event {
+  font-size: 14.5px;
+}
+
+.arrow {
+  stroke-width: 1.75;
+}
+
+/* Client -> server messages are solid, server -> client messages dashed,
+   so the difference does not depend on colour alone. */
+.request .event,
+.request .head {
+  fill: var(--request);
+}
+
+.request .arrow {
+  stroke: var(--request);
+}
+
+.response .event,
+.response .head {
+  fill: var(--response);
+}
+
+.response .arrow {
+  stroke: var(--response);
+  stroke-dasharray: 6 4;
+}
+
+.note {
+  fill: var(--muted);
+  font-size: 13.5px;
+}
+
+/* The only animation on the page: messages appear one after another, once,
+   in the direction they travel. Skipped when the visitor prefers less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .message {
+    animation: draw-right 450ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(var(--i) * 240ms + 300ms);
+  }
+
+  .toLeft {
+    animation-name: draw-left;
+  }
+
+  .fromCenter {
+    animation-name: draw-from-center;
+  }
+}
+
+@keyframes draw-right {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes draw-left {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes draw-from-center {
+  from {
+    clip-path: inset(0 50% 0 50%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
