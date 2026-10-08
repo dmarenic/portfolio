@@ -1,114 +1,349 @@
 .figure {
-  padding: 1.25rem 1.25rem 0.75rem;
+  padding: 1.25rem;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--surface);
 }
 
-.svg {
-  width: 100%;
-  height: auto;
+/* -------------------------------------------------------------------------- */
+/* Diagram: three equal columns, one lifeline in the middle of each           */
+/* -------------------------------------------------------------------------- */
+
+.diagram {
+  position: relative;
 }
 
-/* Show the full diagram on wide screens and the short one on phones. */
-.narrow {
+.actors {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 0.25rem;
+}
+
+.actor {
+  position: relative;
+  z-index: 2;
+  justify-self: center;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Lifelines are painted above the row backgrounds and below the arrows. */
+.lifelines span {
+  position: absolute;
+  z-index: 1;
+  /* Clicks go through the line to the row underneath. */
+  pointer-events: none;
+  top: 1.25rem;
+  bottom: 2rem;
+  border-left: 1.5px dashed var(--line);
+}
+
+.lifelines span:nth-child(1) {
+  left: calc(100% / 6);
+}
+
+.lifelines span:nth-child(2) {
+  left: 50%;
+}
+
+.lifelines span:nth-child(3) {
+  left: calc(500% / 6);
+}
+
+.rows {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each event is a full-width button; the arrow inside it is positioned
+   between two lifelines. */
+.row {
+  /* The label behind the event name uses the same colour as the row. */
+  --row-bg: var(--surface);
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: var(--row-bg);
+  cursor: pointer;
+}
+
+.row:hover {
+  --row-bg: color-mix(in srgb, var(--ink) 6%, var(--surface));
+}
+
+.row[aria-pressed="true"] {
+  --row-bg: color-mix(in srgb, var(--request) 12%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--request);
+}
+
+/* The row sits inside a clipped list, so the focus ring is drawn inside it. */
+.row:focus-visible {
+  outline-offset: -3px;
+}
+
+/* Colours: messages to the server are solid blue, messages from the server
+   are dashed green, so the difference does not depend on colour alone. */
+.request {
+  color: var(--request);
+}
+
+.response {
+  color: var(--response);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Arrow                                                                      */
+/* -------------------------------------------------------------------------- */
+
+/* --start is the left lifeline (0, 1 or 2), --span how many columns the arrow
+   crosses. Lifelines sit at 1/6, 3/6 and 5/6 of the width. */
+.arrow {
+  position: absolute;
+  z-index: 2;
+  bottom: 0.7rem;
+  left: calc((var(--start) * 2 + 1) / 6 * 100% + 3px);
+  width: calc(var(--span) * 2 / 6 * 100% - 6px);
+  height: 0;
+}
+
+.line {
+  position: absolute;
+  inset: -1px 0 auto;
+  border-top: 2px solid currentColor;
+}
+
+.response .line {
+  border-top-style: dashed;
+}
+
+/* Arrowhead: a small triangle at the end the arrow points to. */
+.line::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  border-block: 5px solid transparent;
+}
+
+.toRight .line::after {
+  right: -1px;
+  border-left: 9px solid currentColor;
+}
+
+.toLeft .line::after {
+  left: -1px;
+  border-right: 9px solid currentColor;
+}
+
+/* Event name above the arrow, starting from the sender's side. */
+.label {
+  position: absolute;
+  bottom: 0.3rem;
+  padding-inline: 0.2rem;
+  border-radius: 3px;
+  /* The row colour behind the text hides the dashed lifeline it crosses. */
+  background: var(--row-bg);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.toRight .label {
+  left: 0.3rem;
+}
+
+.toLeft .label {
+  right: 0.3rem;
+}
+
+/* The packet only exists while the round is animating. */
+.packet {
   display: none;
 }
 
-@media (max-width: 39.99rem) {
-  .wide {
-    display: none;
-  }
-
-  .narrow {
-    display: block;
-  }
+.note {
+  margin-top: 0.4rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  text-align: center;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Details of the selected event                                              */
+/* -------------------------------------------------------------------------- */
+
+.details {
+  min-height: 10.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.detailsTitle code {
+  font-family: var(--font-code);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-top: 0.6rem;
+  font-size: 0.875rem;
+}
+
+.facts div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.facts dt {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.payload {
+  flex-basis: 100%;
+  flex-wrap: wrap;
+}
+
+.payload code {
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.detailText {
+  margin-top: 0.6rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+
+.replay {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding-inline: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.replay:hover {
+  border-color: var(--ink);
+}
+
+/* On narrow screens the caption takes the whole row and the button wraps
+   below it. */
 .caption {
-  padding: 0.75rem 0.25rem 0.25rem;
+  flex: 1 1 16rem;
   color: var(--muted);
   font-size: 0.875rem;
   line-height: 1.45;
 }
 
-.actorBox {
-  fill: var(--paper);
-  stroke: var(--line);
-}
-
-.actorName {
-  fill: var(--ink);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.lifeline {
-  stroke: var(--line);
-  stroke-width: 1.5;
-  stroke-dasharray: 3 5;
-}
-
-.event {
-  font-family: var(--font-code);
-  font-size: 14px;
-  font-weight: 500;
-  /* A thin outline in the panel colour keeps labels readable where they
-     cross a dashed lifeline. */
-  paint-order: stroke;
-  stroke: var(--surface);
-  stroke-width: 4px;
-  stroke-linejoin: round;
-}
-
-.narrow .event {
-  font-size: 14.5px;
-}
-
-.arrow {
-  stroke-width: 1.75;
-}
-
-/* Client -> server messages are solid, server -> client messages dashed,
-   so the difference does not depend on colour alone. */
-.request .event,
-.request .head {
-  fill: var(--request);
-}
-
-.request .arrow {
-  stroke: var(--request);
-}
-
-.response .event,
-.response .head {
-  fill: var(--response);
-}
-
-.response .arrow {
-  stroke: var(--response);
-  stroke-dasharray: 6 4;
-}
-
-.note {
-  fill: var(--muted);
-  font-size: 13.5px;
-}
-
-/* The only animation on the page: messages appear one after another, once,
-   in the direction they travel. Skipped when the visitor prefers less motion. */
-@media (prefers-reduced-motion: no-preference) {
-  .message {
-    animation: draw-right 450ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-    animation-delay: calc(var(--i) * 240ms + 300ms);
+@media (max-width: 39.99rem) {
+  .figure {
+    padding: 1rem 0.75rem;
   }
 
-  .toLeft {
+  .row {
+    height: 2.75rem;
+  }
+
+  .label {
+    font-size: 0.8125rem;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Animation of one round                                                     */
+/* -------------------------------------------------------------------------- */
+
+/* Each row starts 330 ms after the previous one (--i is the row index): the
+   label appears, the line is drawn from the sender and a glowing packet
+   travels along it. The whole round lasts about 3.5 seconds and plays once.
+   Visitors who prefer reduced motion see the finished diagram and no replay
+   button, because there is nothing to replay. */
+@media (prefers-reduced-motion: no-preference) {
+  .rows li {
+    --delay: calc(300ms + var(--i) * 330ms);
+  }
+
+  .label {
+    animation: appear 250ms ease-out var(--delay) both;
+  }
+
+  .line {
+    animation: draw-right 330ms ease-out var(--delay) both;
+  }
+
+  .toLeft .line {
     animation-name: draw-left;
   }
 
-  .fromCenter {
-    animation-name: draw-from-center;
+  .packet {
+    display: block;
+    position: absolute;
+    top: 0;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, currentColor 25%, transparent),
+      0 0 12px 2px currentColor;
+    translate: -50% -50%;
+    opacity: 0;
+    animation: travel-right 330ms ease-out var(--delay) both;
+  }
+
+  .toLeft .packet {
+    animation-name: travel-left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .replay {
+    display: none;
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
   }
 }
 
@@ -117,7 +352,7 @@
     clip-path: inset(0 100% 0 0);
   }
   to {
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(-10px);
   }
 }
 
@@ -126,15 +361,40 @@
     clip-path: inset(0 0 0 100%);
   }
   to {
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(-10px);
   }
 }
 
-@keyframes draw-from-center {
-  from {
-    clip-path: inset(0 50% 0 50%);
+@keyframes travel-right {
+  0% {
+    left: 0;
+    opacity: 0;
   }
-  to {
-    clip-path: inset(0 0 0 0);
+  10% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes travel-left {
+  0% {
+    left: 100%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: 0;
+    opacity: 0;
   }
 }

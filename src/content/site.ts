@@ -110,20 +110,134 @@ export const ui = {
       server: { en: "Server", hr: "Poslužitelj" },
       player: { en: "Player", hr: "Igrač" },
     },
-    note: {
-      en: "points are calculated on the server only",
-      hr: "bodove računa samo poslužitelj",
-    },
     caption: {
-      en: "One round of my bachelor's thesis project, traced as Socket.IO events.",
-      hr: "Jedna runda iz mog završnog rada, prikazana kao Socket.IO događaji.",
+      en: "One round of my bachelor's thesis project, as its real Socket.IO events. Select an event to see what it carries.",
+      hr: "Jedna runda iz mog završnog rada, kao stvarni Socket.IO događaji. Odaberi događaj da vidiš što nosi.",
     },
-    description: {
-      en: "The host creates a room and the server confirms it. A player joins and the server tells everyone. The host starts the game and the server sends the first question to everyone. The player submits an answer, the server sends back the result to that player only, and when the question ends the server sends the leaderboard to everyone.",
-      hr: "Domaćin stvara sobu i poslužitelj to potvrđuje. Igrač ulazi i poslužitelj o tome obavještava sve. Domaćin pokreće igru i poslužitelj svima šalje prvo pitanje. Igrač šalje odgovor, poslužitelj rezultat vraća samo tom igraču, a kad pitanje završi, svima šalje ljestvicu.",
+    note: {
+      en: "Points are calculated on the server only.",
+      hr: "Bodove računa samo poslužitelj.",
     },
+    listLabel: {
+      en: "Events in one round of the quiz",
+      hr: "Događaji u jednoj rundi kviza",
+    },
+    sentBy: { en: "From", hr: "Šalje" },
+    sentTo: { en: "To", hr: "Prima" },
+    payload: { en: "Payload", hr: "Sadržaj" },
+    replay: { en: "Replay the round", hr: "Ponovi rundu" },
   },
 };
+
+/* -------------------------------------------------------------------------- */
+/* Events in the hero diagram                                                 */
+/* -------------------------------------------------------------------------- */
+
+// One round of the Online Trivia Quiz, in the order the events happen.
+// Event names and payloads are copied from the quiz backend
+// (backend/src/game.gateway.ts and SOCKET_PROTOCOL.md in that repository).
+export type DiagramActor = "host" | "server" | "player";
+
+export const quizRound: {
+  event: string;
+  from: DiagramActor;
+  to: DiagramActor[];
+  payload: string;
+  detail: Localized;
+}[] = [
+  {
+    event: "create_room",
+    from: "host",
+    to: ["server"],
+    payload: "{ nickname, questionCount?, timePerQuestion? }",
+    detail: {
+      en: "Creates a private room. The server makes a six-character code with a cryptographically secure random generator and leaves out look-alike characters such as 0 and O. One connection can create at most five rooms a minute.",
+      hr: "Stvara privatnu sobu. Poslužitelj kriptografski sigurnim generatorom stvara kod od šest znakova i izostavlja znakove koji izgledaju slično, poput 0 i O. Jedna veza može stvoriti najviše pet soba u minuti.",
+    },
+  },
+  {
+    event: "room_created",
+    from: "server",
+    to: ["host"],
+    payload: "PublicRoom",
+    detail: {
+      en: "Confirms the room to the host. Clients only ever get this public copy of the room: the questions stay on the server, because they contain the correct answers.",
+      hr: "Potvrđuje sobu domaćinu. Klijenti dobivaju samo ovu javnu kopiju sobe: pitanja ostaju na poslužitelju jer sadrže točne odgovore.",
+    },
+  },
+  {
+    event: "join_room",
+    from: "player",
+    to: ["server"],
+    payload: "{ roomCode, nickname, reconnect? }",
+    detail: {
+      en: "Joins a room by its code. A lost connection only marks the player as disconnected, so after a page refresh they rejoin into the same place. A room with nobody connected is deleted after 30 seconds.",
+      hr: "Ulazak u sobu preko koda. Prekid veze igrača samo označi kao odspojenog, pa se nakon osvježavanja stranice vraća na isto mjesto. Soba u kojoj nitko nije spojen briše se nakon 30 sekundi.",
+    },
+  },
+  {
+    event: "player_joined",
+    from: "server",
+    to: ["host", "player"],
+    payload: "PublicRoom",
+    detail: {
+      en: "Tells everyone in the room that a player joined, so every screen shows the same list of players.",
+      hr: "Javlja svima u sobi da je igrač ušao, pa svaki zaslon prikazuje isti popis igrača.",
+    },
+  },
+  {
+    event: "start_game",
+    from: "host",
+    to: ["server"],
+    payload: "{ roomCode, questionCount?, timePerQuestion? }",
+    detail: {
+      en: "Only the host can start, and only when everyone else is ready. The server loads the questions from PostgreSQL, shuffles them and starts the timer.",
+      hr: "Igru može pokrenuti samo domaćin, i to kad su svi ostali spremni. Poslužitelj dohvaća pitanja iz PostgreSQL-a, miješa ih i pokreće odbrojavanje.",
+    },
+  },
+  {
+    event: "game_started",
+    from: "server",
+    to: ["host", "player"],
+    payload:
+      "{ question, questionNumber, totalQuestions, answeredCount, totalPlayers, timePerQuestion }",
+    detail: {
+      en: "Sends the first question to everyone, without the correct answer. From now on timer_updated arrives every second.",
+      hr: "Svima šalje prvo pitanje, bez točnog odgovora. Od tada svake sekunde stiže timer_updated.",
+    },
+  },
+  {
+    event: "submit_answer",
+    from: "player",
+    to: ["server"],
+    payload: "{ roomCode, answer }",
+    detail: {
+      en: "The player sends only the text of the chosen answer, once per question. The server checks it and calculates the points: 1000 for a correct answer plus a speed bonus of max(0, 500 − ms / 30).",
+      hr: "Igrač šalje samo tekst odabranog odgovora, jednom po pitanju. Poslužitelj ga provjerava i računa bodove: 1000 za točan odgovor plus bonus za brzinu max(0, 500 − ms / 30).",
+    },
+  },
+  {
+    event: "answer_result",
+    from: "server",
+    to: ["player"],
+    payload:
+      "{ isCorrect, correctAnswer, pointsEarned, players, answeredCount, totalPlayers }",
+    detail: {
+      en: "Goes only to the player who answered. It is the only event with the correct answer, so nobody can read the answer from network traffic before answering.",
+      hr: "Ide samo igraču koji je odgovorio. Jedini događaj s točnim odgovorom, pa ga nitko ne može pročitati iz mrežnog prometa prije nego što odgovori.",
+    },
+  },
+  {
+    event: "question_ended",
+    from: "server",
+    to: ["host", "player"],
+    payload: "{ players, answeredCount, totalPlayers }",
+    detail: {
+      en: "Sent when everyone has answered or the time runs out, with the updated scores. If the host does not move on within 30 seconds, the server continues by itself.",
+      hr: "Šalje se kad svi odgovore ili istekne vrijeme, s novim bodovima. Ako domaćin ne nastavi unutar 30 sekundi, poslužitelj nastavlja sam.",
+    },
+  },
+];
 
 /* -------------------------------------------------------------------------- */
 /* About                                                                      */
