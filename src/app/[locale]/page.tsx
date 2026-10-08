@@ -5,6 +5,11 @@ import { isLocale } from "@/lib/i18n";
 import { pageAlternates } from "@/lib/metadata";
 import { Header } from "@/components/Header/Header";
 import { Hero } from "@/components/Hero/Hero";
+import { Projects } from "@/components/Projects/Projects";
+import { Skills } from "@/components/Skills/Skills";
+import { Education, Experience } from "@/components/Timeline/Timeline";
+import { About } from "@/components/About/About";
+import { Contact } from "@/components/Contact/Contact";
 
 export async function generateMetadata({
   params,
@@ -28,6 +33,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <Header locale={locale} path="/" />
       <main id="main">
         <Hero locale={locale} />
+        <Projects locale={locale} />
+        <Skills locale={locale} />
+        <Experience locale={locale} />
+        <Education locale={locale} />
+        <About locale={locale} />
+        <Contact locale={locale} />
       </main>
     </>
   );
