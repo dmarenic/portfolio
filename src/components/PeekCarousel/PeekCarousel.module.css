@@ -1,0 +1,215 @@
+/* -------------------------------------------------------------------------- */
+/* Frame: the cards, the arrows and the bars under the cards                  */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * Wide screens: the arrows lie over the peeking cards on the left and the
+ * right (same grid area as the cards), the bars are under the cards.
+ * Phones: the arrows move under the cards, on both sides of the bars.
+ */
+.frame {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "stage stage stage"
+    "dots dots dots";
+  row-gap: 1rem;
+}
+
+.stage {
+  grid-area: stage;
+  /* Card width and the step from one card to the next, in % of the card's
+     own width (transform percentages are relative to the element). The
+     active card is 80% of the content width, so 10% is left on each side:
+     50px of the neighbour shows, the rest is the gap between the cards. */
+  --card: 80%;
+  --step: calc(112.5% - 50px);
+  display: grid;
+  overflow: clip;
+  touch-action: pan-y;
+}
+
+.slide {
+  grid-area: 1 / 1;
+  justify-self: center;
+  width: var(--card);
+  min-width: 0;
+  transform: translateX(calc(var(--offset) * var(--step)));
+  transition:
+    transform 500ms var(--ease-reveal),
+    opacity 500ms var(--ease-reveal);
+}
+
+.slide[data-place="side"] {
+  opacity: 0.4;
+}
+
+.slide[data-place="away"] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* The card that changes sides does not slide across the middle: it fades
+   in at its new place. The animation has two names used in turn
+   (data-change), so it starts again on every change. */
+.slide[data-jump] {
+  transition: none;
+  animation: 500ms var(--ease-reveal) both;
+}
+
+.slide[data-jump][data-change="odd"] {
+  animation-name: appear-odd;
+}
+
+.slide[data-jump][data-change="even"] {
+  animation-name: appear-even;
+}
+
+/* With reduced motion the cards do not slide: they are put in their new
+   places at once and fade in there. */
+@media (prefers-reduced-motion: reduce) {
+  .slide {
+    transition: none;
+  }
+
+  .slide[data-animate] {
+    animation: 300ms var(--ease-out) both;
+  }
+
+  .slide[data-animate][data-change="odd"] {
+    animation-name: appear-odd;
+  }
+
+  .slide[data-animate][data-change="even"] {
+    animation-name: appear-even;
+  }
+}
+
+@keyframes appear-odd {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes appear-even {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Round buttons with a border, like the theme button in the top bar, a
+   little larger. On wide screens they lie over the peeking cards. */
+.arrow {
+  z-index: 1;
+  display: inline-grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition:
+    border-color 200ms var(--ease-out),
+    transform 150ms var(--ease-out);
+}
+
+.arrow:hover {
+  border-color: var(--ink);
+}
+
+.arrow:active {
+  transform: scale(0.94);
+}
+
+.previous,
+.next {
+  grid-area: stage;
+  align-self: center;
+}
+
+.previous {
+  justify-self: start;
+}
+
+.next {
+  justify-self: end;
+}
+
+/* Three small bars, one per card; the active one is longer and dark. The
+   button is taller than the bar it shows, so it is easy to click. */
+.dots {
+  grid-area: dots;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.dot {
+  position: relative;
+  width: 1.25rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: width 300ms var(--ease-reveal);
+}
+
+.dot::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--line);
+  translate: 0 -50%;
+  transition: background-color 200ms var(--ease-out);
+}
+
+.dot:hover::before {
+  background: color-mix(in srgb, var(--ink) 40%, var(--line));
+}
+
+.dot[aria-current="true"] {
+  width: 2.25rem;
+}
+
+.dot[aria-current="true"]::before {
+  background: var(--ink);
+}
+
+/* Phones: the neighbours peek 16px, the gap between cards is 12px, and the
+   arrows sit under the cards on both sides of the bars. */
+@media (max-width: 47.99rem) {
+  .frame {
+    grid-template-areas:
+      "stage stage stage"
+      "previous dots next";
+    align-items: center;
+  }
+
+  .stage {
+    --card: calc(100% - 56px);
+    --step: calc(100% + 12px);
+  }
+
+  .previous {
+    grid-area: previous;
+  }
+
+  .next {
+    grid-area: next;
+  }
+
+  .arrow {
+    width: 2.75rem;
+    height: 2.75rem;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,449 @@
+/*
+ * The chat window: about 380 x 560px above the button in the bottom right
+ * corner, with the corners, border and colours of the cards on the page.
+ * Where that does not fit (phones and short screens) it fills the screen.
+ *
+ * A modal <dialog> is shown by the browser in its own top layer, so no
+ * z-index is needed. The browser centres it by default; inset and margin
+ * below move it to the corner instead.
+ */
+.window {
+  /* Height of the button in the corner and the gap above it. */
+  --above-button: calc(var(--corner-bottom) + 3.5rem + 0.75rem);
+
+  position: fixed;
+  inset: auto max(var(--corner-inset), env(safe-area-inset-right))
+    var(--above-button) auto;
+  width: min(23.75rem, 100vw - 2 * var(--corner-inset));
+  height: min(35rem, 100dvh - var(--above-button) - var(--corner-inset));
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* The page stays visible behind the window; a click there closes it. */
+.window::backdrop {
+  background: transparent;
+}
+
+.window:focus-visible {
+  outline: none;
+}
+
+/* Phones and short screens: the window covers the whole screen and keeps its
+   content clear of the notch and the home indicator (safe-area-inset). */
+@media (max-width: 29.99rem), (max-height: 37.5rem) {
+  .window {
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* globals.css also stops the page behind from scrolling meanwhile. */
+  .frame {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+      env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .window[open] {
+    animation: window-in 300ms var(--ease-out);
+    transform-origin: 100% 100%;
+  }
+}
+
+@keyframes window-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.97);
+  }
+}
+
+.frame {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Header                                                                     */
+/* -------------------------------------------------------------------------- */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.75rem 0.75rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+/* The small "AI" label next to the name. */
+.badge {
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+.subtitle {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Round icon buttons, like the theme switch. */
+.iconButton {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  cursor: pointer;
+  transition:
+    border-color 200ms var(--ease-out),
+    transform 150ms var(--ease-out);
+}
+
+.iconButton:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.iconButton:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.iconButton:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Messages                                                                   */
+/* -------------------------------------------------------------------------- */
+
+/* The only part that scrolls. overscroll-behavior keeps the page behind from
+   scrolling when the messages reach their end. */
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.75rem 1rem;
+}
+
+/* Centred in the free space when it fits, otherwise it scrolls from the top. */
+.empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  text-align: center;
+}
+
+.emptyName {
+  margin-top: 0.7rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.greeting {
+  max-width: 18rem;
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.tryAsking {
+  margin-top: 1.1rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+/* Pill buttons, like .pill in globals.css but smaller. */
+.suggestion {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.3;
+  cursor: pointer;
+  transition:
+    border-color 200ms var(--ease-out),
+    transform 150ms var(--ease-out);
+}
+
+.suggestion:hover {
+  border-color: var(--ink);
+}
+
+.suggestion:active {
+  transform: scale(0.97);
+}
+
+/* The suggestions appear one after another (--i is set in ChatWindow). */
+@media (prefers-reduced-motion: no-preference) {
+  .suggestions li {
+    animation: suggestion-in 450ms var(--ease-out) both;
+    animation-delay: calc(200ms + var(--i) * 150ms);
+  }
+}
+
+@keyframes suggestion-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0;
+  list-style: none;
+}
+
+.user,
+.assistant {
+  max-width: 85%;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* The visitor's messages: right, accent colour with dark text. */
+.user {
+  align-self: flex-end;
+  border-radius: 1rem 1rem 0.3rem 1rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  white-space: pre-wrap;
+}
+
+/* Answers: left, the colours of a card. */
+.assistant {
+  align-self: flex-start;
+  border: 1px solid var(--line);
+  border-radius: 1rem 1rem 1rem 0.3rem;
+  background: var(--surface);
+}
+
+.assistant[data-notice] {
+  color: var(--muted);
+}
+
+.assistant p + p,
+.assistant p + ul,
+.assistant ul + p {
+  margin-top: 0.5rem;
+}
+
+.assistant ul {
+  padding-left: 1.1rem;
+}
+
+.assistant a {
+  overflow-wrap: anywhere;
+}
+
+/* Three dots while waiting for the first part of the answer. */
+.dots {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding-block: 0.45rem;
+}
+
+.dots span {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dots span {
+    animation: dot 1.2s ease-in-out infinite;
+  }
+
+  .dots span:nth-child(2) {
+    animation-delay: 150ms;
+  }
+
+  .dots span:nth-child(3) {
+    animation-delay: 300ms;
+  }
+}
+
+@keyframes dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: none;
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-0.2rem);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Message field                                                              */
+/* -------------------------------------------------------------------------- */
+
+.composer {
+  padding: 0.75rem 1rem 0.85rem;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.field {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding: 0.35rem 0.35rem 0.35rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 1.4rem;
+  background: var(--paper);
+  transition: border-color 200ms var(--ease-out);
+}
+
+.field:focus-within {
+  border-color: var(--ink);
+}
+
+/* Grows up to four lines (resize() in ChatWindow sets the height), then
+   scrolls. The focus ring is drawn on the whole field above instead. */
+.input {
+  flex: 1;
+  min-width: 0;
+  max-height: calc(4lh + 0.9rem);
+  padding: 0.45rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  resize: none;
+}
+
+.input:focus-visible {
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--muted);
+}
+
+/* The round send button in the accent colour, with an arrow pointing up. */
+.send {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  cursor: pointer;
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 150ms var(--ease-out);
+}
+
+.send:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.send:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.counter {
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.turnstile:not(:empty) {
+  margin-top: 0.5rem;
+}
+
+/* Out of sight but not display: none, which some bots skip. */
+.trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.disclaimer {
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  text-align: center;
+}

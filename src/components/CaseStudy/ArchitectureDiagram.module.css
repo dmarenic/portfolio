@@ -1,0 +1,138 @@
+.figure {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
+/*
+ * A grid of three columns: the main flow runs down the middle one, and the
+ * Gemini box sits in the right one, on the same row as NestJS. On phones the
+ * flow moves to the left column to leave room for the Gemini box.
+ */
+.flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 15rem) minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow > li {
+  grid-column: 2;
+}
+
+/* A box can be stretched to the height of its row (NestJS next to the
+   taller Gemini box), so its text is centred vertically too. */
+.node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--paper);
+  text-align: center;
+}
+
+.name {
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.note {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* A downward arrow between two boxes, with an optional label on its right. */
+.link {
+  position: relative;
+  height: 3.25rem;
+}
+
+.link::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 10px;
+  left: 50%;
+  border-left: 2px solid var(--request);
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  left: calc(50% - 4px);
+  border-inline: 5px solid transparent;
+  border-top: 7px solid var(--request);
+}
+
+.linkLabel {
+  position: absolute;
+  top: 50%;
+  left: calc(50% + 0.75rem);
+  translate: 0 -55%;
+  color: var(--muted);
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+/* The Gemini box: third column, same row as NestJS (the fifth item), with a
+   short arrow pointing at it from NestJS. */
+.flow > .side {
+  position: relative;
+  grid-column: 3;
+  grid-row: 5;
+  align-self: center;
+  justify-self: start;
+  margin-left: 2.25rem;
+}
+
+.side::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 8px);
+  width: calc(2.25rem - 12px);
+  border-top: 2px solid var(--request);
+}
+
+.side::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 4px);
+  right: calc(100% + 1px);
+  border-block: 5px solid transparent;
+  border-left: 7px solid var(--request);
+}
+
+@media (max-width: 39.99rem) {
+  .flow {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+
+  .flow > li {
+    grid-column: 1;
+  }
+
+  .flow > .side {
+    grid-column: 2;
+    margin-left: 1.5rem;
+  }
+
+  .side::before {
+    width: calc(1.5rem - 12px);
+  }
+
+  .node {
+    padding: 0.6rem 0.5rem;
+  }
+
+  .note {
+    font-size: 0.8125rem;
+  }
+}

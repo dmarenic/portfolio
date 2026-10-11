@@ -31,7 +31,10 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
+# .env.local and every other env file stay out of git; only the empty
+# template .env.example is committed.
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -46,9 +49,13 @@ next-env.d.ts
 
 # local Claude Code settings
 .claude/settings.local.json
+.claude/launch.json
 
 # drafts waiting for review (not part of the site)
 /drafts/
 
 # third-party Claude Code skills installed locally (taste-skill, MIT)
 .claude/skills/
+
+# screenshots of the design examples used for the redesign (not ours to publish)
+/reference/

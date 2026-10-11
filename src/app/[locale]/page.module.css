@@ -1,0 +1,15 @@
+/*
+ * Wrapper of the hero and the projects panel (see page.tsx).
+ *
+ * The projects panel gives its scroll progress a name, --hero-cover
+ * (view-timeline). timeline-scope on the wrapper makes that name usable by
+ * the hero next to it, which shrinks and fades the portrait while the panel
+ * covers it (see Hero.module.css).
+ */
+.cover {
+  timeline-scope: --hero-cover;
+}
+
+.cover > section + section {
+  view-timeline: --hero-cover block;
+}

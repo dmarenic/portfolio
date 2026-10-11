@@ -84,7 +84,20 @@
 
 .row[aria-pressed="true"] {
   --row-bg: color-mix(in srgb, var(--request) 12%, var(--surface));
-  box-shadow: inset 3px 0 0 var(--request);
+}
+
+/* A short straight bar marks the selected row. It is a separate element
+   kept away from the rounded corners: an inset box-shadow would follow the
+   corner radius and bend into a "(" shape. */
+.row[aria-pressed="true"]::before {
+  content: "";
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: 0.3rem;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--request);
 }
 
 /* The row sits inside a clipped list, so the focus ring is drawn inside it. */

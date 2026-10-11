@@ -1,0 +1,85 @@
+/* Bottom right corner, mirrored by the links menu in the bottom left. The
+   avatar (54px) fills the 56px button inside its 1px border. */
+.launcher {
+  position: fixed;
+  right: max(var(--corner-inset), env(safe-area-inset-right));
+  bottom: var(--corner-bottom);
+  z-index: var(--z-corner);
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition:
+    opacity 300ms var(--ease-out),
+    translate 300ms var(--ease-out),
+    transform 150ms var(--ease-out),
+    visibility 0s linear 300ms;
+}
+
+/* Hidden until the first check in the browser, and while it would cover the
+   hero links (see ChatLauncher.tsx). Shown and hidden like the links menu. */
+.launcher:not([data-visible]) {
+  visibility: hidden;
+  opacity: 0;
+  translate: 0 1rem;
+}
+
+.launcher[data-visible] {
+  transition-delay: 0s;
+}
+
+.launcher:hover > span {
+  border-color: var(--ink);
+}
+
+.launcher:active {
+  transform: scale(0.94);
+}
+
+/* A second ring in the accent colour that flickers once when the button
+   first appears, to draw the eye to it. */
+.launcher::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The flicker starts once, when data-shown is set the first time the button
+   is visible. */
+@media (prefers-reduced-motion: no-preference) {
+  .launcher[data-shown]::after {
+    animation: flicker 1.2s linear 400ms 1 both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .launcher:not([data-visible]) {
+    translate: none;
+  }
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  10%,
+  30%,
+  60% {
+    opacity: 1;
+  }
+  20%,
+  45% {
+    opacity: 0.2;
+  }
+}

@@ -1,10 +1,10 @@
 /**
  * Light and dark theme.
  *
- * By default the site follows the operating system setting
- * (prefers-color-scheme). When the visitor presses the theme button, their
- * choice is saved in localStorage and written to <html data-theme="...">,
- * which globals.css uses to override the system setting.
+ * The light theme is the default, whatever the operating system is set to.
+ * When the visitor presses the theme button, their choice is saved in
+ * localStorage and written to <html data-theme="dark">, which globals.css uses
+ * to switch the colours.
  */
 export type Theme = "light" | "dark";
 
@@ -14,23 +14,23 @@ export const themeStorageKey = "theme";
 export const themeChangeEvent = "themechange";
 
 /**
- * Runs in <head> before the page is painted, so a saved theme is applied
- * without a flash of the wrong colours. localStorage can throw (for example
+ * Runs in <head> before the page is painted, so a saved dark theme is applied
+ * without a flash of the light colours. localStorage can throw (for example
  * when storage is blocked), so it is wrapped in try/catch.
  */
-export const themeScript = `try{var t=localStorage.getItem("${themeStorageKey}");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
-
-const darkQuery = "(prefers-color-scheme: dark)";
+export const themeScript = `try{if(localStorage.getItem("${themeStorageKey}")==="dark")document.documentElement.dataset.theme="dark"}catch(e){}`;
 
 /** The theme the page is showing right now. Browser only. */
 export function getCurrentTheme(): Theme {
-  const chosen = document.documentElement.dataset.theme;
-  if (chosen === "light" || chosen === "dark") return chosen;
-  return window.matchMedia(darkQuery).matches ? "dark" : "light";
+  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
 }
 
 export function setTheme(theme: Theme): void {
-  document.documentElement.dataset.theme = theme;
+  if (theme === "dark") {
+    document.documentElement.dataset.theme = "dark";
+  } else {
+    delete document.documentElement.dataset.theme;
+  }
   try {
     localStorage.setItem(themeStorageKey, theme);
   } catch {
@@ -39,13 +39,8 @@ export function setTheme(theme: Theme): void {
   window.dispatchEvent(new Event(themeChangeEvent));
 }
 
-/** Calls `onChange` when the theme changes, by the button or by the system. */
+/** Calls `onChange` when the theme button changes the theme. */
 export function subscribeToTheme(onChange: () => void): () => void {
-  const media = window.matchMedia(darkQuery);
-  media.addEventListener("change", onChange);
   window.addEventListener(themeChangeEvent, onChange);
-  return () => {
-    media.removeEventListener("change", onChange);
-    window.removeEventListener(themeChangeEvent, onChange);
-  };
+  return () => window.removeEventListener(themeChangeEvent, onChange);
 }

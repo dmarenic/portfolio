@@ -1,13 +1,66 @@
 /* -------------------------------------------------------------------------- */
-/* Shared project text                                                        */
+/* Cards                                                                      */
+/* -------------------------------------------------------------------------- */
+
+/* Every project is a card. min-width: 0 lets long words and the diagram
+   shrink with the card instead of pushing out of it. */
+.card {
+  min-width: 0;
+  padding: clamp(1rem, 2.5vw, 2rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
+/* Screenshot frame: rounded, and it clips the picture, so the picture can
+   grow a little on hover while the frame stays the same size. */
+.media {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius-card) - 0.5rem);
+  background: var(--paper);
+}
+
+.media img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: top;
+}
+
+/* An upright phone screenshot: the frame keeps the same landscape shape as
+   the others (so the cards stay equally tall), and the whole screen is shown
+   in the middle of it, on the neutral colour of the frame. A little padding
+   keeps it off the edges. */
+.contain img {
+  padding-block: clamp(0.5rem, 1.5vw, 1rem);
+  object-fit: contain;
+  object-position: center;
+}
+
+/* On hover the screenshot grows a little inside its frame; the card itself
+   stays in place. Only with a mouse, and not with reduced motion. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .media img {
+    transition: transform 600ms var(--ease-reveal);
+  }
+
+  .project:hover .media img,
+  .featuredTop:hover .media img {
+    transform: scale(1.04);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Project text                                                               */
 /* -------------------------------------------------------------------------- */
 
 .name {
   font-size: clamp(1.45rem, 1.15rem + 1.1vw, 1.9rem);
-  font-weight: 800;
-  font-stretch: 118%;
+  font-weight: 700;
   line-height: 1.1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .context {
@@ -25,7 +78,8 @@
   max-width: 38rem;
   margin-top: 1rem;
   padding-left: 1.1rem;
-  font-size: 0.97rem;
+  color: var(--muted);
+  font-size: 0.95rem;
 }
 
 .highlights li + li {
@@ -33,127 +87,75 @@
 }
 
 .highlights li::marker {
-  color: var(--request);
-}
-
-.stack {
-  margin-top: 1rem;
-  color: var(--muted);
-  font-size: 0.95rem;
+  color: var(--accent);
 }
 
 .stackLabel {
-  color: var(--ink);
-  font-weight: 600;
+  margin: 1.25rem 0 0.5rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
 }
 
 .links {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem 1.5rem;
-  margin-top: 1.25rem;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
   padding: 0;
   list-style: none;
-  font-weight: 600;
 }
 
-.links a {
-  display: inline-block;
-  padding-block: 0.35rem;
-}
-
-/* The case study is the main action, so it looks like a button. */
-.links .primaryLink {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-  padding: 0 1.1rem;
-  border-radius: var(--radius);
-  background: var(--ink);
-  color: var(--paper);
-  text-decoration: none;
-  white-space: nowrap;
-  transition:
-    background-color 200ms var(--ease-out),
-    color 200ms var(--ease-out),
-    transform 120ms var(--ease-out);
-}
-
-.links .primaryLink:hover {
-  background: var(--request);
-  color: var(--surface);
-}
-
-.links .primaryLink:active {
-  transform: translateY(1px) scale(0.98);
-}
-
+/* Small muted text, like the other notes and captions on the site. */
 .note {
-  margin-top: 0.6rem;
+  margin-top: 0.75rem;
   color: var(--muted);
   font-size: 0.875rem;
 }
 
 /* -------------------------------------------------------------------------- */
-/* Featured project: wide screenshot, text panel overlapping its lower edge   */
+/* Featured project: text and screenshot side by side                         */
 /* -------------------------------------------------------------------------- */
 
-.featuredImage {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 8;
-  object-fit: cover;
-  object-position: top;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-large);
-  /* A soft shadow tinted with the accent colour, not plain black. */
-  box-shadow: 0 2.5rem 4rem -2.5rem
-    color-mix(in srgb, var(--request) 45%, transparent);
-}
-
-.featuredPanel {
-  position: relative;
+.featuredTop {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-  gap: 1.5rem clamp(2rem, 4vw, 3.5rem);
-  margin: -5rem clamp(1rem, 4vw, 3.5rem) 0;
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-large);
-  background: var(--surface);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  grid-template-areas: "text media";
+  gap: 2rem clamp(2rem, 4vw, 3.5rem);
+  align-items: start;
 }
 
-.featuredPanel .name {
-  font-size: clamp(1.8rem, 1.3rem + 2vw, 2.6rem);
+.featuredText {
+  grid-area: text;
+  min-width: 0;
 }
 
+.featuredTop > .media {
+  grid-area: media;
+}
+
+.featured .name {
+  font-size: clamp(1.9rem, 1.3rem + 2.2vw, 3rem);
+}
+
+/* On narrower screens: screenshot, then text. */
 @media (max-width: 59.99rem) {
-  .featuredPanel {
+  .featuredTop {
     grid-template-columns: minmax(0, 1fr);
-    margin: -2.5rem 0.5rem 0;
-  }
-
-  .featuredImage {
-    aspect-ratio: 4 / 3;
+    grid-template-areas:
+      "media"
+      "text";
   }
 }
 
 /* -------------------------------------------------------------------------- */
-/* Other projects, side by side                                               */
+/* Other projects, two columns                                                */
 /* -------------------------------------------------------------------------- */
 
-.others {
+.grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 3rem clamp(2rem, 4vw, 3.5rem);
-  margin-top: clamp(3rem, 6vw, 4.5rem);
-}
-
-@media (max-width: 59.99rem) {
-  .others {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  gap: clamp(1rem, 2vw, 1.5rem);
+  margin-top: clamp(1rem, 2vw, 1.5rem);
 }
 
 .project {
@@ -162,11 +164,15 @@
   gap: 1.5rem;
 }
 
-/* Side by side, both projects share the parent's two rows (subgrid), so the
-   text of both starts at the same height even though the screenshot and the
+.projectText {
+  min-width: 0;
+}
+
+/* Side by side, both cards share the grid's two rows (subgrid), so the text
+   of both starts at the same height even though the screenshot and the
    diagram are not equally tall. */
 @media (min-width: 60rem) {
-  .others {
+  .grid {
     grid-template-rows: auto auto;
   }
 
@@ -176,119 +182,8 @@
   }
 }
 
-.image {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  object-position: top;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-large);
-}
-
-/* Screenshots and the diagram ease in as they scroll into view, in browsers
-   that support scroll-driven animations. No JavaScript is involved. */
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .featuredImage,
-    .image,
-    .architecture {
-      animation: settle linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 45%;
-    }
+@media (max-width: 59.99rem) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
   }
-}
-
-@keyframes settle {
-  from {
-    opacity: 0;
-    transform: translateY(2rem);
-  }
-}
-
-/* -------------------------------------------------------------------------- */
-/* Blue Pulse architecture diagram                                            */
-/* -------------------------------------------------------------------------- */
-
-.architecture {
-  padding: 1.25rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-large);
-  background: var(--surface);
-}
-
-.layers,
-.sources {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.layer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0.15rem 1rem;
-  padding: 0.65rem 0.9rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--paper);
-}
-
-.layerName {
-  font-weight: 600;
-}
-
-.layerRole {
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-/* A short downward arrow between two layers. */
-.layers li + li,
-.sources {
-  position: relative;
-  margin-top: 1.75rem;
-}
-
-.layers li + li::before,
-.sources::before {
-  content: "";
-  position: absolute;
-  top: calc(-1.75rem + 3px);
-  left: 50%;
-  height: calc(1.75rem - 9px);
-  border-left: 2px solid var(--request);
-}
-
-.layers li + li::after,
-.sources::after {
-  content: "";
-  position: absolute;
-  top: -8px;
-  left: calc(50% - 4px);
-  border-inline: 5px solid transparent;
-  border-top: 7px solid var(--request);
-}
-
-.sources {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem;
-}
-
-.sources .layer {
-  flex-direction: column;
-  align-items: center;
-  justify-content: start;
-  text-align: center;
-  padding-inline: 0.5rem;
-}
-
-.architectureCaption {
-  margin-top: 1rem;
-  color: var(--muted);
-  font-size: 0.875rem;
-  line-height: 1.45;
 }

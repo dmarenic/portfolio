@@ -42,7 +42,8 @@
   min-height: 2.75rem;
   margin-top: 1rem;
   padding-inline: 1.1rem;
-  border-radius: var(--radius);
+  /* Buttons are fully round, like the pills on the rest of the site. */
+  border-radius: 999px;
   background: var(--ink);
   color: var(--paper);
   font-weight: 600;

@@ -1,3 +1,4 @@
+/* A round icon button, the same height as the pill buttons next to it. */
 .button {
   display: inline-grid;
   place-items: center;
@@ -5,13 +6,12 @@
   height: 2.75rem;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: transparent;
+  border-radius: 50%;
+  background: var(--surface);
   cursor: pointer;
-}
-
-.button {
-  transition: border-color 200ms var(--ease-out);
+  transition:
+    border-color 200ms var(--ease-out),
+    transform 150ms var(--ease-out);
 }
 
 .button:hover {
@@ -19,5 +19,5 @@
 }
 
 .button:active {
-  transform: translateY(1px);
+  transform: scale(0.94);
 }

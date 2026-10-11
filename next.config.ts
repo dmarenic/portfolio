@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
   // Do not generate AGENTS.md (instructions for AI coding tools) on `next dev`.
   agentRules: false,
 
+  // The chat route reads src/content/chatbot/dodatno.md while it runs (see
+  // lib/chatbot/knowledge.ts). Next.js copies to the server only the files
+  // it can see being imported, so this file has to be listed.
+  outputFileTracingIncludes: {
+    "/api/chat": ["./src/content/chatbot/**/*"],
+  },
+
   experimental: {
     // Lets src/app/global-not-found.tsx render the 404 page for addresses that
     // match no route. It is needed because the root layout is under [locale].

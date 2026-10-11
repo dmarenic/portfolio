@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFoundPage } from "@/content/site";
-import { archivo, jetbrainsMono } from "@/lib/fonts";
+import { geist, geistMono } from "@/lib/fonts";
 import { localePath } from "@/lib/i18n";
 import { themeScript } from "@/lib/theme";
 import "./globals.css";
@@ -22,13 +22,14 @@ export default function GlobalNotFound() {
   return (
     <html
       lang="en"
-      className={`${archivo.variable} ${jetbrainsMono.variable}`}
+      className={`${geist.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body>
+      {/* Browser extensions may add attributes to <body>; see the layout. */}
+      <body suppressHydrationWarning>
         <main className={`container ${styles.page}`}>
           <p className={styles.code}>404</p>
           <div className={styles.messages}>

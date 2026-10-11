@@ -1,81 +1,63 @@
-import { projects, skills } from "@/content/site";
+import { projects, skills, ui } from "@/content/site";
 import type { Locale } from "@/lib/i18n";
+import { PeekCarousel } from "@/components/PeekCarousel/PeekCarousel";
 import { Section } from "@/components/Section/Section";
+import { skillIcon } from "./skillIcons";
+import { SkillTiles } from "./SkillTiles";
 import styles from "./Skills.module.css";
 
-/* The skill lists sit under the heading in the left column; the matrix on the
-   right shows where each technology appears in the projects. */
+/*
+ * The skills on three cards (frontend, backend and databases, tools and
+ * other languages) in a carousel (PeekCarousel), which shows the next card
+ * every 6 seconds.
+ */
 export function Skills({ locale }: { locale: Locale }) {
-  const { comfortable, basics, matrix } = skills;
+  const { cards } = skills;
+  const of = ui.carousel.of[locale];
 
-  const lists = (
-    <div className={styles.groups}>
-      {[comfortable, basics].map((group) => (
-        <div key={group.label.en}>
-          <h3 className={styles.groupTitle}>{group.label[locale]}</h3>
-          <ul className={styles.tags}>
-            {group.items.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </div>
-      ))}
+  // The projects that list a skill under "Built with", by exact name only,
+  // for example "Online Trivia Quiz". Empty when no project lists it.
+  const usedIn = (skill: string) =>
+    projects
+      .filter((project) => project.stack.includes(skill))
+      .map((project) => project.name)
+      .join(" · ");
+
+  const slides = cards.map((card) => (
+    <div key={card.name.en} className={styles.card}>
+      <h3 className={styles.cardTitle}>{card.name[locale]}</h3>
+      <p className={styles.cardText}>{card.description[locale]}</p>
+      <SkillTiles
+        skills={card.items.map((name) => ({
+          name,
+          projects: usedIn(name),
+          icon: skillIcon(name),
+        }))}
+      />
     </div>
-  );
+  ));
+
+  const skillCount = cards.reduce((sum, card) => sum + card.items.length, 0);
 
   return (
     <Section
       id="skills"
-      title={skills.title[locale]}
-      layout="rail"
-      aside={lists}
+      title={ui.nav.labels.skills[locale]}
+      meta={`(${skillCount})`}
     >
-      <h3 id="skills-matrix-title" className={styles.matrixTitle}>
-        {matrix.title[locale]}
-      </h3>
-      <p id="skills-matrix-note" className={styles.note}>
-        {matrix.note[locale]}
-      </p>
-
-      {/* A real table: screen readers announce the technology and the project
-          for every cell. */}
-      <table
-        className={styles.matrix}
-        aria-labelledby="skills-matrix-title"
-        aria-describedby="skills-matrix-note"
-      >
-        <thead>
-          <tr>
-            <th scope="col">{matrix.technology[locale]}</th>
-            {projects.map((project) => (
-              <th key={project.id} scope="col">
-                {project.name}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {matrix.rows.map((row) => (
-            <tr key={row.skill}>
-              <th scope="row">{row.skill}</th>
-              {projects.map((project) => {
-                const use = row.cells[project.id];
-                return use ? (
-                  <td key={project.id} className={styles.used}>
-                    {use}
-                  </td>
-                ) : (
-                  <td key={project.id}>
-                    <span className="visually-hidden">
-                      {matrix.notUsed[locale]}
-                    </span>
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div data-reveal>
+        <PeekCarousel
+          labelledBy="skills-title"
+          intervalMs={6000}
+          slides={slides}
+          slideNames={cards.map((card) => card.name[locale])}
+          slideLabels={cards.map((_, i) => `${i + 1} ${of} ${cards.length}`)}
+          labels={{
+            previous: ui.carousel.previous[locale],
+            next: ui.carousel.next[locale],
+          }}
+        />
+      </div>
     </Section>
   );
 }

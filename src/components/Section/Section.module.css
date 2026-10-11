@@ -1,39 +1,147 @@
-.stacked,
-.rail {
-  padding-block: clamp(3rem, 7vw, 5.5rem) clamp(3.5rem, 8vw, 6rem);
-  border-top: 1px solid var(--line);
+/*
+ * The link target in front of a panel that lies underneath (see Section.tsx).
+ * It sits where the panel starts once it is no longer pinned, at the bottom
+ * edge of the panel above. The heading of the panel is
+ * --panel-space-underneath lower, so a negative scroll margin of the same
+ * size makes the browser scroll that much further: the heading ends up at
+ * the top of the screen, or as close as the end of the page allows.
+ */
+.anchor {
+  scroll-margin-top: calc(-1 * var(--panel-space-underneath));
 }
 
-.stacked {
-  display: grid;
-  gap: clamp(1.75rem, 3vw, 2.5rem);
+/*
+ * Section heading: the large faint word, and under it, in the normal flow of
+ * the page, the real heading (h2) with the short fact on the right.
+ */
+.head {
+  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
 }
 
-.rail {
-  display: grid;
-  grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
-  gap: 2rem clamp(2.5rem, 5vw, 4.5rem);
+/*
+ * The large word, in the same font and style as the first name in the hero:
+ * capitals, drawn as an outline in a colour close to the background.
+ *
+ * Its size fills the content width: the width of the content divided by the
+ * number of letters (--letters, set in Section.tsx) times 0.6, the average
+ * width of one of these capitals relative to the font size. It never grows
+ * past 18vw, so short words do not become huge. What still sticks out on the
+ * right is cut off by the panel (overflow-x: clip).
+ *
+ * line-height 0.88 makes the box only a little taller than the capitals
+ * (0.73em in Geist), so the space to the heading below depends on the
+ * letters, not on the empty space the font reserves around them.
+ */
+.word {
+  --content: min(100vw - 2 * var(--gutter), var(--page-max));
+  display: block;
+  font-size: clamp(3rem, calc(var(--content) / (var(--letters) * 0.6)), 18vw);
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  /* Without outline support: solid letters, barely darker than the panel. */
+  color: color-mix(in srgb, var(--ink) 7%, var(--paper));
+  user-select: none;
 }
 
-@media (max-width: 59.99rem) {
-  .rail {
-    grid-template-columns: minmax(0, 1fr);
+/*
+ * The outline. Geist is a variable font, and its letters keep the places
+ * where their parts overlap (the bar of an L runs into the stem). A fill
+ * hides those overlaps, but -webkit-text-stroke draws every edge, so they
+ * showed up as small lines inside the letters.
+ *
+ * So the stroke is drawn first and twice as wide, and then the letters are
+ * filled with the colour of the panel on top of it (paint-order: stroke
+ * fill). The fill covers the inner half of the stroke together with the
+ * lines inside the letters, and only the outer half, the real outline,
+ * stays visible.
+ */
+@supports (-webkit-text-stroke: 1px) {
+  .word {
+    color: var(--paper);
+    -webkit-text-stroke: max(2px, 0.012em)
+      color-mix(in srgb, var(--ink) 22%, transparent);
+    paint-order: stroke fill;
   }
 }
 
-/* In the rail layout the heading column stays in view on wide screens. */
-@media (min-width: 60rem) {
-  .rail .side {
-    position: sticky;
-    top: 1.5rem;
-    align-self: start;
+/* The bottom edge of the box is the baseline of the letters, so the space
+   under the word is exactly the margin of the heading below. Browsers
+   without text-box (Firefox for now) get the same result from a negative
+   margin as large as the space under the baseline at this line-height. */
+@supports (text-box: trim-end cap alphabetic) {
+  .word {
+    text-box: trim-end cap alphabetic;
   }
+}
+
+@supports not (text-box: trim-end cap alphabetic) {
+  .word {
+    margin-bottom: -0.09em;
+  }
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+}
+
+/* Clear space between the large word and the heading: 12px on phones,
+   growing to 18px on wide screens. */
+.head .titleRow {
+  margin-top: clamp(0.75rem, 0.25rem + 1.6vw, 1.125rem);
 }
 
 .title {
-  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.4rem);
-  font-weight: 800;
-  font-stretch: 118%;
+  font-size: clamp(1.35rem, 1.05rem + 1vw, 2rem);
+  font-weight: 600;
   line-height: 1.1;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
+}
+
+/* The slash is muted on light panels and in the accent colour on dark ones,
+   where the accent is easy to read. */
+.slash {
+  margin-right: 0.08em;
+  color: var(--muted);
+}
+
+:global(.tone-dark) .slash {
+  color: var(--accent);
+}
+
+.meta {
+  color: var(--muted);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+/* Contact: the heading first, then a large visible line set like the name
+   in the hero (capitals, tight letter spacing, the same size limit). The
+   outline and highlighted words are styled in Contact.module.css. */
+.headDisplay {
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.display {
+  margin-top: clamp(1.25rem, 3vw, 2rem);
+  font-size: min(10.4vw, 8rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+/* Narrower screens: larger, like the name in the hero below 72rem. */
+@media (max-width: 71.99rem) {
+  .display {
+    font-size: min(16vw, 8rem);
+  }
 }

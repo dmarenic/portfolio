@@ -42,6 +42,17 @@ export const profile = {
   email: "dominik.marenic@gmail.com",
   github: "https://github.com/dmarenic",
   linkedin: "https://www.linkedin.com/in/dominik-marenic/",
+  // The black and white cut-out at the top of the home page. Made from the
+  // studio headshot with drafts/portrait-cutout.cjs.
+  portrait: {
+    src: "/images/dominik-marenic-portrait.webp",
+    width: 1108,
+    height: 1213,
+    alt: {
+      en: "Black and white portrait of Dominik Marenić",
+      hr: "Crno-bijeli portret Dominika Marenića",
+    },
+  },
   // Shown in the About section. Set to null to hide it.
   photo: {
     src: "/images/dominik-marenic.jpg",
@@ -90,6 +101,9 @@ export const ui = {
   skipLink: { en: "Skip to content", hr: "Preskoči na sadržaj" },
   nav: {
     label: { en: "Main", hr: "Glavna navigacija" },
+    // Screen reader name of the GitHub, LinkedIn and CV links on the right
+    // side of the hero.
+    profileLinks: { en: "Profiles and CV", hr: "Profili i životopis" },
     homeLink: {
       en: "Dominik Marenić, home page",
       hr: "Dominik Marenić, početna stranica",
@@ -120,6 +134,24 @@ export const ui = {
     github: { en: "GitHub profile", hr: "GitHub profil" },
     linkedin: { en: "LinkedIn profile", hr: "LinkedIn profil" },
   },
+  // The round button in the bottom left corner that opens the same profile
+  // links as the hero (see LinksMenu). The CV labels come from profile.cv.
+  linksMenu: {
+    label: { en: "Links", hr: "Poveznice" },
+    email: { en: "Email", hr: "E-pošta" },
+  },
+  // Read by screen readers after every link that opens in a new tab (see
+  // ExternalLink).
+  newTab: {
+    en: "(opens in a new tab)",
+    hr: "(otvara se u novoj kartici)",
+  },
+  // Buttons of the carousel (see Carousel). Slides are named "1 of 3".
+  carousel: {
+    previous: { en: "Previous", hr: "Prethodna" },
+    next: { en: "Next", hr: "Sljedeća" },
+    of: { en: "of", hr: "od" },
+  },
   diagram: {
     actors: {
       host: { en: "Host", hr: "Domaćin" },
@@ -146,7 +178,7 @@ export const ui = {
 };
 
 /* -------------------------------------------------------------------------- */
-/* Events in the hero diagram                                                 */
+/* Events in the round diagram (on the case study page)                       */
 /* -------------------------------------------------------------------------- */
 
 // One round of the Online Trivia Quiz, in the order the events happen.
@@ -270,11 +302,13 @@ export const about = {
       en: "During a summer internship I worked on a Flutter web app, partly on my own and partly with the team. Now I'm looking for a junior backend or full stack role, in Osijek or remote, and most of all a job where I can learn with a mentor.",
       hr: "Na ljetnoj stručnoj praksi radio sam na web aplikaciji u Flutteru, dijelom samostalno, a dijelom u timu. Sada tražim posao junior backend ili full stack programera, u Osijeku ili na daljinu, a najviše mi znači posao na kojem mogu učiti uz mentora.",
     },
-    {
-      en: "Outside of programming I train at the gym, watch TV series and watch football with friends.",
-      hr: "Izvan programiranja treniram u teretani, gledam serije i nogomet s ekipom.",
-    },
   ],
+  // The last part, set a little larger, like a statement. The words between
+  // asterisks are highlighted.
+  statement: {
+    en: "When I close the laptop, I head to the *gym*, start the next episode of a *series* or watch *football with friends*. On race weekends, I don't miss *Formula 1*. I'm communicative and enjoy *working in a team*, because good ideas usually get better once they're shared.",
+    hr: "Kad zatvorim laptop, odlazim u *teretanu*, puštam sljedeću epizodu *serije* ili gledam *nogomet s prijateljima*. Kad je vikend utrke, ne propuštam *Formulu 1*. Komunikativan sam i volim *raditi u timu*, jer dobre ideje obično postanu još bolje kad se podijele.",
+  },
 };
 
 /* -------------------------------------------------------------------------- */
@@ -296,16 +330,17 @@ export type Project = {
     code: string;
   };
   demoNote?: Localized;
-  // A screenshot, or a diagram drawn by a component when there is no screenshot.
-  visual:
-    | {
-        type: "image";
-        src: string;
-        width: number;
-        height: number;
-        alt: Localized;
-      }
-    | { type: "diagram" };
+  // A screenshot. fit "contain" shows the whole screenshot (an upright phone
+  // screen) inside the landscape frame instead of filling the frame and
+  // cutting it off.
+  visual: {
+    type: "image";
+    src: string;
+    width: number;
+    height: number;
+    alt: Localized;
+    fit?: "contain";
+  };
 };
 
 export const projectsSection = {
@@ -441,40 +476,19 @@ export const projects: Project[] = [
     links: {
       code: "https://github.com/dmarenic/blue-pulse",
     },
-    visual: { type: "diagram" },
+    visual: {
+      type: "image",
+      src: "/images/projects/blue-pulse.jpg",
+      width: 1080,
+      height: 2115,
+      alt: {
+        en: "Blue Pulse home screen: the next match, Dinamo Zagreb against Anderlecht in the UEFA Europa League at Stadion Maksimir, with a countdown in days, hours and minutes, a match reminder button and the bottom navigation",
+        hr: "Početni zaslon aplikacije Blue Pulse: sljedeća utakmica Dinamo Zagreb – Anderlecht u UEFA Europa League na Stadionu Maksimir, s odbrojavanjem u danima, satima i minutama, gumbom za podsjetnik na utakmicu i donjom navigacijom",
+      },
+      fit: "contain",
+    },
   },
 ];
-
-// Drawn instead of a screenshot for Blue Pulse (the app shows club crests,
-// which must not appear on this site). Layers are taken from the app's README.
-export const bluePulseArchitecture = {
-  layers: [
-    { name: "Jetpack Compose", role: { en: "screens", hr: "zasloni" } },
-    {
-      name: "ViewModel",
-      role: { en: "StateFlow of UiState", hr: "StateFlow s UiState" },
-    },
-    {
-      name: "Repository",
-      role: { en: "picks the data source", hr: "bira izvor podataka" },
-    },
-  ],
-  sources: [
-    {
-      name: "Retrofit",
-      role: { en: "TheSportsDB API", hr: "TheSportsDB API" },
-    },
-    {
-      name: "Firebase",
-      role: { en: "Auth, Firestore", hr: "Auth, Firestore" },
-    },
-    { name: "Room", role: { en: "offline cache", hr: "offline predmemorija" } },
-  ],
-  caption: {
-    en: "How data moves through Blue Pulse. Fixtures and players come from the API, then from the Room cache, then from built-in data, so the screens are never empty.",
-    hr: "Kako podaci putuju kroz Blue Pulse. Utakmice i igrači dolaze s API-ja, zatim iz Room predmemorije, pa iz ugrađenih podataka, zato zasloni nikad nisu prazni.",
-  },
-};
 
 /* -------------------------------------------------------------------------- */
 /* Skills                                                                     */
@@ -482,71 +496,41 @@ export const bluePulseArchitecture = {
 
 export const skills = {
   title: { en: "Skills", hr: "Vještine" },
-  comfortable: {
-    label: { en: "Comfortable with", hr: "Dobro poznajem" },
-    items: [
-      "TypeScript",
-      "JavaScript",
-      "Python",
-      "C",
-      "HTML",
-      "CSS",
-      "React",
-      "Next.js",
-      "NestJS",
-      "Node.js",
-      "Django",
-      "SQL",
-      "PostgreSQL",
-      "Prisma",
-      "Git",
-    ],
-  },
-  basics: {
-    label: { en: "Basics", hr: "Osnove" },
-    items: ["Kotlin", "Docker", "GitHub Actions"],
-  },
-  matrix: {
-    title: {
-      en: "Where you can see it in my code",
-      hr: "Gdje se to vidi u mom kodu",
+  // Every skill once, on three cards of the skills carousel.
+  cards: [
+    {
+      name: { en: "Frontend", hr: "Frontend" },
+      description: {
+        en: "The parts of an app people see and use.",
+        hr: "Sučelja koja korisnik vidi i koristi.",
+      },
+      items: ["HTML", "CSS", "JavaScript", "TypeScript", "React", "Next.js"],
     },
-    note: {
-      en: "Each filled cell names how the technology is used in that project.",
-      hr: "Svaka popunjena ćelija pokazuje kako je tehnologija korištena u tom projektu.",
+    {
+      name: { en: "Backend & databases", hr: "Backend i baze podataka" },
+      description: {
+        en: "Servers, APIs and the data behind an app.",
+        hr: "Poslužitelji, API-ji i podaci iza aplikacije.",
+      },
+      items: [
+        "Node.js",
+        "NestJS",
+        "Python",
+        "Django",
+        "SQL",
+        "PostgreSQL",
+        "Prisma",
+      ],
     },
-    technology: { en: "Technology", hr: "Tehnologija" },
-    notUsed: { en: "Not used", hr: "Nije korišteno" },
-    // Every row is a technology; a cell names what the project uses it for.
-    // Cell text is a technical name, so it reads the same in both languages.
-    rows: [
-      { skill: "TypeScript", cells: { trivia: "Next.js, NestJS" } },
-      { skill: "Python", cells: { ratemymeal: "Django" } },
-      { skill: "Kotlin", cells: { bluepulse: "Jetpack Compose" } },
-      {
-        skill: "HTML & CSS",
-        cells: { trivia: "Tailwind CSS", ratemymeal: "Bootstrap" },
+    {
+      name: { en: "Tools & other languages", hr: "Alati i ostali jezici" },
+      description: {
+        en: "Version control, containers, automation and languages beyond the web.",
+        hr: "Verzioniranje, kontejneri, automatizacija i jezici izvan weba.",
       },
-      { skill: "React & Next.js", cells: { trivia: "App Router" } },
-      { skill: "NestJS & Node.js", cells: { trivia: "REST, Socket.IO" } },
-      { skill: "Django", cells: { ratemymeal: "ORM, Admin" } },
-      {
-        skill: "SQL",
-        cells: {
-          trivia: "PostgreSQL",
-          ratemymeal: "SQLite",
-          bluepulse: "Room",
-        },
-      },
-      { skill: "Prisma", cells: { trivia: "Prisma Migrate" } },
-      { skill: "Docker", cells: { trivia: "Docker Compose" } },
-      { skill: "GitHub Actions", cells: { trivia: "CI" } },
-      {
-        skill: "Git",
-        cells: { trivia: "GitHub", ratemymeal: "GitHub", bluepulse: "GitHub" },
-      },
-    ] satisfies { skill: string; cells: Partial<Record<ProjectId, string>> }[],
-  },
+      items: ["Git", "C", "Kotlin", "Docker", "GitHub Actions"],
+    },
+  ],
 };
 
 /* -------------------------------------------------------------------------- */
@@ -577,6 +561,7 @@ export const experience = {
 
 export const education = {
   title: { en: "Education", hr: "Obrazovanje" },
+  // Newest first. degree is left out where no degree was given.
   items: [
     {
       school: {
@@ -595,7 +580,24 @@ export const education = {
       },
       period: { en: "2023-2026", hr: "2023-2026" },
     },
-  ],
+    {
+      school: {
+        en: "Technical School Kutina",
+        hr: "Tehnička škola Kutina",
+      },
+      // VERIFY: the English name of the programme is a suggestion.
+      programme: {
+        en: "Computer Technician",
+        hr: "Tehničar za računalstvo",
+      },
+      period: { en: "2019-2023", hr: "2019-2023" },
+    },
+  ] as {
+    school: Localized;
+    programme: Localized;
+    degree?: Localized;
+    period: Localized;
+  }[],
 };
 
 /* -------------------------------------------------------------------------- */
@@ -604,9 +606,95 @@ export const education = {
 
 export const contact = {
   title: { en: "Contact", hr: "Kontakt" },
+  // The large line at the top of the contact section, set like the name in
+  // the hero. The last word is highlighted.
+  heading: { en: "Get in touch", hr: "Javite se" },
   text: {
     en: "Email is the best way to reach me. You can also find me on LinkedIn and GitHub.",
     hr: "Najlakše ćete me dobiti e-poštom. Možete me pronaći i na LinkedInu i GitHubu.",
+  },
+};
+
+/* -------------------------------------------------------------------------- */
+/* Chatbot                                                                    */
+/* -------------------------------------------------------------------------- */
+
+// The AI assistant in the bottom right corner (see components/Chat). What the
+// assistant knows comes from this file too (see lib/chatbot/knowledge.ts).
+export const chatbot = {
+  name: "Dominik AI",
+  badge: "AI",
+  subtitle: {
+    en: "Answers questions about me",
+    hr: "Odgovara na pitanja o meni",
+  },
+  // Screen reader name and tooltip of the round button.
+  open: { en: "Open Dominik AI", hr: "Otvori Dominik AI" },
+  close: { en: "Close", hr: "Zatvori" },
+  newChat: { en: "New chat", hr: "Novi razgovor" },
+  greeting: {
+    en: "Hi! I'm Dominik's AI assistant. Ask me about his projects, skills or experience.",
+    hr: "Bok! Ja sam Dominikov AI asistent. Pitaj me o njegovim projektima, vještinama ili iskustvu.",
+  },
+  tryAsking: { en: "Try asking:", hr: "Pokušaj pitati:" },
+  suggestions: [
+    {
+      en: "What tech stack do you use?",
+      hr: "Koje tehnologije koristiš?",
+    },
+    {
+      en: "What's your most interesting project?",
+      hr: "Koji ti je najzanimljiviji projekt?",
+    },
+    {
+      en: "Are you open to work, and where?",
+      hr: "Tražiš li posao i gdje možeš raditi?",
+    },
+  ],
+  placeholder: {
+    en: "Ask anything about me...",
+    hr: "Pitaj nešto o meni...",
+  },
+  inputLabel: { en: "Your message", hr: "Tvoja poruka" },
+  send: { en: "Send", hr: "Pošalji" },
+  // Read by screen readers before each message.
+  you: { en: "You", hr: "Ti" },
+  typing: { en: "Dominik AI is typing", hr: "Dominik AI piše" },
+  disclaimer: {
+    en: "AI can make mistakes. Chats are saved and sent to Dominik, so please don't share personal data.",
+    hr: "AI može pogriješiti. Razgovori se spremaju i šalju Dominiku, pa ne upisuj osobne podatke.",
+  },
+  // Answers the visitor gets instead of a reply from the model. Each one
+  // ends with the email address, so the visitor can always reach Dominik.
+  errors: {
+    unavailable: {
+      en: `Sorry, I can't answer right now. Please try again later, or write to Dominik at ${profile.email}.`,
+      hr: `Nažalost, trenutno ne mogu odgovoriti. Pokušaj ponovno kasnije ili piši Dominiku na ${profile.email}.`,
+    },
+    invalid: {
+      en: `This message can't be sent. A message can have up to 500 characters. You can also write to Dominik at ${profile.email}.`,
+      hr: `Ovu poruku nije moguće poslati. Poruka može imati najviše 500 znakova. Možeš pisati i Dominiku na ${profile.email}.`,
+    },
+    tooFast: {
+      en: `That's a lot of messages in a short time. Please wait a few minutes, or write to Dominik at ${profile.email}.`,
+      hr: `Stiglo je puno poruka u kratkom vremenu. Pričekaj nekoliko minuta ili piši Dominiku na ${profile.email}.`,
+    },
+    daily: {
+      en: `You've reached today's message limit. For more questions, write to Dominik at ${profile.email}.`,
+      hr: `Dosegnuto je današnje ograničenje poruka. Za daljnja pitanja piši Dominiku na ${profile.email}.`,
+    },
+    conversation: {
+      en: `This chat has reached its message limit. Start a new chat, or write to Dominik at ${profile.email}.`,
+      hr: `Ovaj razgovor je dosegnuo najveći broj poruka. Započni novi razgovor ili piši Dominiku na ${profile.email}.`,
+    },
+    site: {
+      en: `I've answered a lot of questions today and I'm taking a break until tomorrow. Write to Dominik at ${profile.email}.`,
+      hr: `Danas sam odgovorio na puno pitanja i odmaram do sutra. Piši Dominiku na ${profile.email}.`,
+    },
+    verification: {
+      en: `I couldn't confirm that you're not a bot. Please reload the page and try again, or write to Dominik at ${profile.email}.`,
+      hr: `Nisam uspio potvrditi da nisi bot. Osvježi stranicu i pokušaj ponovno ili piši Dominiku na ${profile.email}.`,
+    },
   },
 };
 
@@ -626,8 +714,10 @@ export const notFoundPage = {
 };
 
 export const footer = {
+  // "No tracking cookies": Cloudflare Turnstile in the chat window may set a
+  // security cookie, so "no cookies" would no longer be true.
   builtWith: {
-    en: "Built with Next.js and TypeScript. No cookies, no tracking.",
-    hr: "Izrađeno u Next.jsu i TypeScriptu. Bez kolačića i praćenja.",
+    en: "Built with Next.js and TypeScript. No tracking cookies.",
+    hr: "Izrađeno u Next.jsu i TypeScriptu. Bez kolačića za praćenje.",
   },
 };

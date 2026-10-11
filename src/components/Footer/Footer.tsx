@@ -7,7 +7,7 @@ const year = new Date().getFullYear();
 
 export function Footer({ locale }: { locale: Locale }) {
   return (
-    <footer className={styles.footer}>
+    <footer className={`tone-dark ${styles.footer}`}>
       <div className="container">
         <div className={styles.inner}>
           <p>

@@ -1,7 +1,7 @@
 /*
- * Global styles: design tokens, a small reset, base typography and the shared
- * motion system. Component styles live next to each component in
- * *.module.css files.
+ * Global styles: design tokens, a small reset, base typography, shared
+ * helpers (buttons, tags) and the motion system. Component styles live next
+ * to each component in *.module.css files.
  */
 
 /* -------------------------------------------------------------------------- */
@@ -9,58 +9,147 @@
 /* -------------------------------------------------------------------------- */
 
 /*
- * light-dark(light value, dark value) picks a colour based on `color-scheme`.
- * By default the page follows the system setting ("light dark"); the theme
- * button sets data-theme on <html>, which locks color-scheme to one of them.
+ * The light theme is the default. The theme button sets data-theme="dark" on
+ * <html>, which swaps the values below. Components only use the variables,
+ * so they never need to know which theme is on.
  */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
-  /* Page background, raised panels, main and secondary text, borders. */
-  --paper: light-dark(#eef1f5, #121a27);
-  --surface: light-dark(#ffffff, #182233);
-  --ink: light-dark(#1a2233, #e3e8f0);
-  --muted: light-dark(#4f5a6e, #a3afc1);
-  --line: light-dark(#c8d0dc, #2e3c52);
+  /* Page background, raised cards, main and secondary text, borders. */
+  --paper: #ececea;
+  --surface: #f7f7f5;
+  --ink: #161816;
+  --muted: #5a5d59;
+  --line: #d3d4d0;
 
-  /* Accents from the sequence diagram: client -> server messages (also used
-     for focus) and server -> client messages. */
-  --request: light-dark(#2b59c3, #8ea9ff);
-  --response: light-dark(#0b6e5b, #5ed3b6);
-  --focus: var(--request);
+  /* Sequence diagram: messages to the server and messages from the server. */
+  --request: #161816;
+  --response: #1f6b52;
+  --focus: #161816;
 
-  /* Light from above on raised panels, and shadows tinted with the accent
-     instead of plain black. */
-  --edge-highlight: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.07));
-  --shadow-tint: color-mix(in srgb, var(--request) 38%, transparent);
+  /* The one accent colour. It is too light for text on a light background,
+     so it is only used as a fill behind dark text, or on dark sections. */
+  --accent: #c8e05a;
+  --accent-ink: #161816;
 
-  --font-body: var(--font-archivo), system-ui, sans-serif;
-  --font-code: var(--font-mono), ui-monospace, monospace;
+  /* Dark panels (see .tone-dark below). The background is the same
+     near-black as the "Kontakt" button. */
+  --dark-bg: #161816;
+  --dark-surface: #20231f;
+  --dark-ink: #ececea;
+  --dark-muted: #a4a9a3;
+  --dark-line: rgb(255 255 255 / 0.14);
 
-  --page-max: 76rem;
+  /* A thin light line along the rounded top edge of every panel. Only the
+     dark theme uses it, because its two panel colours are close. */
+  --panel-edge: transparent;
+
+  --shadow:
+    0 1px 2px rgb(22 24 22 / 0.06), 0 16px 40px -18px rgb(22 24 22 / 0.28);
+
+  --font-body: var(--font-geist), system-ui, sans-serif;
+  --font-code: var(--font-geist-mono), ui-monospace, monospace;
+
+  --page-max: 80rem;
   --gutter: clamp(1rem, 4vw, 3rem);
 
-  /* One radius rule for the whole site: small tags 6px, buttons and inputs
-     10px, panels and images 14px. */
-  --radius-small: 6px;
-  --radius: 10px;
-  --radius-large: 14px;
+  /* One radius rule: tags and buttons are fully round, cards 20px, the
+     corners of panels that slide over each other 24px on phones and 48px
+     from 48rem up. */
+  --radius-small: 8px;
+  --radius-card: 1.25rem;
+  --radius-panel: 1.5rem;
+
+  /* Space above and below the content of a panel: 80px on phones, up to
+     about 144px on wide screens. */
+  --panel-space: clamp(5rem, 3rem + 7vw, 9rem);
+  /* The contact panel has less space above its heading (see
+     .panel-underneath and .anchor in Section.module.css). */
+  --panel-space-underneath: calc(var(--panel-space) * 0.75);
 
   /* Shared timing for hover, focus and press feedback. */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Layers, from bottom to top. */
   --z-header: 50;
+  --z-dock: 55;
+  --z-corner: 56;
   --z-skip-link: 60;
   --z-grain: 1000;
+
+  /* The round buttons in the bottom corners (links menu and chat): distance
+     from the edges of the screen, kept clear of the rounded corners and the
+     home indicator of phones (safe-area-inset). */
+  --corner-inset: clamp(1rem, 2vw, 1.5rem);
+  --corner-bottom: max(var(--corner-inset), env(safe-area-inset-bottom));
 }
 
-:root[data-theme="light"] {
-  color-scheme: light;
+@media (min-width: 48rem) {
+  :root {
+    --radius-panel: 3rem;
+  }
+}
+
+/* Below 48rem (768px) the floating navigation (Dock, marked with data-dock)
+   reaches the corners, so on pages that have it the corner buttons sit above
+   it: its bottom offset, its height (about 3rem) and a gap. */
+@media (max-width: 47.99rem) {
+  :root:has([data-dock]) {
+    --corner-bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 3.75rem);
+  }
+}
+
+/* While the chat window covers the whole screen (phones and short screens,
+   see ChatWindow.module.css), the page behind it does not scroll. */
+@media (max-width: 29.99rem), (max-height: 37.5rem) {
+  :root:has(dialog[data-chat][open]) {
+    overflow: hidden;
+  }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
+
+  --paper: #111311;
+  --surface: #1a1d1a;
+  --ink: #e8e9e5;
+  --muted: #a2a7a1;
+  --line: #2e332e;
+
+  --request: #e8e9e5;
+  --response: #c8e05a;
+  --focus: #c8e05a;
+
+  /* In the dark theme the light panels use the colours above (#111311) and
+     the dark panels a lighter graphite, so the two still alternate. */
+  --dark-bg: #222622;
+  --dark-surface: #2b302b;
+  --dark-ink: #e8e9e5;
+  --dark-muted: #a8ada7;
+  --dark-line: rgb(255 255 255 / 0.12);
+  --panel-edge: rgb(255 255 255 / 0.08);
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 16px 40px -18px rgb(0 0 0 / 0.7);
+}
+
+/*
+ * A dark panel. It works by giving the usual variables new values inside
+ * the panel, so cards, tags and links inside it need no extra styles. Used
+ * for the projects, experience and contact panels and the footer.
+ */
+.tone-dark {
+  color-scheme: dark;
+  --paper: var(--dark-bg);
+  --surface: var(--dark-surface);
+  --ink: var(--dark-ink);
+  --muted: var(--dark-muted);
+  --line: var(--dark-line);
+  --request: var(--dark-ink);
+  --response: var(--accent);
+  --focus: var(--accent);
+  background: var(--paper);
+  color: var(--ink);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -76,14 +165,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-}
-
-/* On wide screens the header sticks to the top, so anchor links stop below
-   it instead of under it. */
-@media (min-width: 48rem) {
-  html {
-    scroll-padding-top: 6rem;
-  }
+  /* Anchor links stop a little below the top edge instead of touching it. */
+  scroll-padding-top: 1.5rem;
 }
 
 body {
@@ -98,7 +181,8 @@ body {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--request) 28%, transparent);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 h1,
@@ -120,6 +204,9 @@ h1,
 h2,
 h3,
 h4 {
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
   text-wrap: balance;
 }
 
@@ -159,6 +246,10 @@ button {
   color: inherit;
 }
 
+code {
+  font-family: var(--font-code);
+}
+
 /* Fine grain over the whole page, so flat colour areas get a little texture.
    It sits on a fixed layer that ignores the pointer and never scrolls, which
    keeps it cheap to draw. */
@@ -168,7 +259,7 @@ body::after {
   inset: 0;
   z-index: var(--z-grain);
   pointer-events: none;
-  opacity: 0.045;
+  opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -181,7 +272,7 @@ body::after {
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -200,6 +291,68 @@ body::after {
   max-width: calc(var(--page-max) + 2 * var(--gutter));
   margin-inline: auto;
   padding-inline: var(--gutter);
+}
+
+/*
+ * Panels: every section after the hero.
+ *
+ * - Opaque background and a higher layer (z-index 1) than the hero, which
+ *   stays pinned at the top of the screen on wide screens. Without both, the
+ *   hero would show through.
+ * - Rounded top corners and a negative top margin of the same size, so each
+ *   panel slides over the bottom edge of the one before it. The extra bottom
+ *   padding makes up for the part the next panel covers.
+ * - Neighbouring panels alternate light and dark (.tone-dark) in page.tsx.
+ * - overflow-x: clip cuts off the large words behind the headings, so they
+ *   never cause sideways scrolling.
+ */
+.panel {
+  position: relative;
+  z-index: 1;
+  margin-top: calc(-1 * var(--radius-panel));
+  padding-block: var(--panel-space)
+    calc(var(--panel-space) + var(--radius-panel));
+  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: inset 0 1px 0 var(--panel-edge);
+  overflow-x: clip;
+}
+
+/* The panel before the contact section also has rounded bottom corners:
+   the contact section lies underneath it and is uncovered as it leaves. */
+.panel-round-bottom {
+  padding-bottom: var(--panel-space);
+  border-radius: var(--radius-panel);
+}
+
+/*
+ * The last panel (contact) lies underneath the panel before it (layer 0)
+ * and stays pinned to the bottom of the screen until that panel has scrolled
+ * away. It starts under the rounded corners of that panel, so its colour
+ * fills them. page.tsx puts both panels in one wrapper, so the pinning only
+ * lasts while the panel above is on screen. On short screens the contact
+ * section could be taller than the screen, and pinning it would hide its
+ * top, so there it simply scrolls.
+ *
+ * Because it is pinned, links to it point to an empty marker in front of it
+ * instead of to the panel itself (see Section.tsx).
+ */
+.panel-underneath {
+  z-index: 0;
+  /* Less space above than other panels, so the panel stays short enough to
+     be pinned on more screens. The space below keeps the links clear of the
+     floating navigation while the panel is pinned to the bottom. */
+  padding-block: calc(var(--panel-space-underneath) + var(--radius-panel)) 6rem;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+@media (min-height: 46rem) {
+  .panel-underneath {
+    position: sticky;
+    bottom: 0;
+  }
 }
 
 /* Hidden on screen, still read by screen readers. */
@@ -222,10 +375,10 @@ body::after {
   left: 0.75rem;
   z-index: var(--z-skip-link);
   padding: 0.6rem 1rem;
-  border-radius: var(--radius);
+  border-radius: 999px;
   background: var(--ink);
   color: var(--paper);
-  font-weight: 600;
+  font-weight: 500;
   transform: translateY(-200%);
 }
 
@@ -233,48 +386,90 @@ body::after {
   transform: none;
 }
 
-/* A short arrow under section headings: a "message" in the style of the
-   sequence diagram. It draws itself when the heading scrolls into view. */
-.heading-arrow {
-  position: relative;
-  display: block;
-  width: 4.5rem;
-  height: 2px;
-  margin-top: 1rem;
-  background: var(--request);
-  transform-origin: left;
-}
-
-.heading-arrow::after {
-  content: "";
-  position: absolute;
-  right: -1px;
-  top: -4px;
-  border-block: 5px solid transparent;
-  border-left: 9px solid var(--request);
-}
-
-/* Text links that underline from left to right on hover. A thin underline is
-   always there, so the link never depends on colour alone. */
-.link {
+/*
+ * Pill buttons and links, the main control shape of the site.
+ *   .pill          light, with a thin border
+ *   .pill-dark     filled with the text colour (the main action)
+ *   .pill-accent   filled with the accent colour
+ * An arrow icon inside moves a little on hover.
+ */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.2;
   text-decoration: none;
-  background:
-    linear-gradient(currentColor, currentColor) 0 100% / 0% 2px no-repeat,
-    linear-gradient(
-        color-mix(in srgb, currentColor 35%, transparent),
-        color-mix(in srgb, currentColor 35%, transparent)
-      )
-      0 100% / 100% 1px no-repeat;
-  padding-bottom: 0.1em;
+  white-space: nowrap;
+  cursor: pointer;
   transition:
-    background-size 350ms var(--ease-out),
-    color 200ms var(--ease-out);
+    background-color 200ms var(--ease-out),
+    border-color 200ms var(--ease-out),
+    color 200ms var(--ease-out),
+    transform 150ms var(--ease-out);
 }
 
-.link:hover {
-  background-size:
-    100% 2px,
-    100% 1px;
+.pill:hover {
+  border-color: var(--ink);
+}
+
+.pill:active {
+  transform: scale(0.97);
+}
+
+.pill svg {
+  flex-shrink: 0;
+  transition: transform 300ms var(--ease-out);
+}
+
+.pill:hover svg[data-arrow] {
+  transform: translate(2px, -2px);
+}
+
+.pill-dark {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.pill-dark:hover {
+  background: color-mix(in srgb, var(--ink) 85%, var(--paper));
+}
+
+.pill-accent {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.pill-accent:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 85%, white);
+}
+
+/* Small rounded labels that are not interactive (technologies). */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0;
+  list-style: none;
+}
+
+.tags li {
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -282,110 +477,69 @@ body::after {
 /* -------------------------------------------------------------------------- */
 
 /*
- * Everything below runs only when the visitor has not asked for reduced
- * motion. Scroll-linked effects use CSS scroll-driven animations
- * (animation-timeline), which run off the main thread and need no
- * JavaScript; browsers without them simply show the finished state.
- *
  * Components opt in with data attributes:
- *   data-reveal        fades and rises into place as it scrolls into view
- *   data-reveal-delay  shifts the reveal a little later (for staggering)
- *   data-draw          scales in from the left (lines and arrows)
- * Pointer effects (data-spotlight, data-tilt, data-magnetic) are set up by
- * the PointerEffects component.
+ *   data-reveal   fades in and rises 32px the first time it comes into view
+ *   data-row      fades in and slides in 40px from the left (list rows)
+ *   data-drift    moves sideways while it crosses the screen (the large
+ *                 faint words behind section headings)
+ * data-reveal and data-row are set off by the RevealObserver component,
+ * which adds data-revealed once and staggers elements that appear together
+ * by 80ms (--reveal-delay). The hiding styles apply only after it has set
+ * data-motion on <html>, so without JavaScript everything is visible.
+ * data-magnetic is set up by the PointerEffects component.
+ *
+ * Only transform and opacity are animated: the browser can move and fade an
+ * element without laying out the page again.
  */
 
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    [data-reveal] {
-      animation: reveal-up linear both;
-      animation-timeline: view();
-      animation-range: entry calc(5% + var(--stagger, 0) * 7%) entry
-        calc(60% + var(--stagger, 0) * 7%);
-    }
-
-    [data-draw],
-    .heading-arrow {
-      animation: draw-in linear both;
-      animation-timeline: view();
-      animation-range: entry 30% entry 100%;
-    }
-  }
+:root {
+  --ease-reveal: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@keyframes reveal-up {
-  from {
-    opacity: 0;
-    transform: translateY(2.25rem);
-  }
+:root[data-motion] [data-reveal],
+:root[data-motion] [data-row] {
+  transition:
+    opacity 600ms var(--ease-reveal) var(--reveal-delay, 0ms),
+    transform 600ms var(--ease-reveal) var(--reveal-delay, 0ms);
 }
 
-@keyframes draw-in {
-  from {
-    transform: scaleX(0);
-  }
-}
-
-/* Spotlight: a soft light follows the pointer across a panel and lights up
-   its border. --mx and --my are set by PointerEffects. */
-[data-spotlight] {
-  position: relative;
-  isolation: isolate;
-}
-
-[data-spotlight]::before,
-[data-spotlight]::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  border-radius: inherit;
+:root[data-motion] [data-reveal]:not([data-revealed]),
+:root[data-motion] [data-row]:not([data-revealed]) {
   opacity: 0;
-  transition: opacity 400ms var(--ease-out);
 }
 
-/* The glow on the surface, under the content. */
-[data-spotlight]::before {
-  inset: 0;
-  z-index: -1;
-  background: radial-gradient(
-    28rem circle at var(--mx, 50%) var(--my, 50%),
-    color-mix(in srgb, var(--request) 9%, transparent),
-    transparent 60%
-  );
+/* Movement only for visitors who have not asked for reduced motion; the
+   others see the fade alone. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-motion] [data-reveal]:not([data-revealed]) {
+    transform: translateY(32px);
+  }
+
+  :root[data-motion] [data-row]:not([data-revealed]) {
+    transform: translateX(-40px);
+  }
+
+  /* Scroll-linked: CSS scroll-driven animations (animation-timeline) run
+     off the main thread and need no JavaScript. Browsers without them
+     (Firefox for now) simply show the word standing still. */
+  @supports (animation-timeline: view()) {
+    [data-drift] {
+      animation: drift linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+  }
 }
 
-/* The glow on the 1px border ring only (the mask cuts out the inside). */
-[data-spotlight]::after {
-  inset: -1px;
-  padding: 1px;
-  background: radial-gradient(
-    20rem circle at var(--mx, 50%) var(--my, 50%),
-    color-mix(in srgb, var(--request) 75%, transparent),
-    transparent 55%
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box exclude,
-    linear-gradient(#000 0 0);
-}
-
-[data-spotlight]:hover::before,
-[data-spotlight]:hover::after {
-  opacity: 1;
-}
-
-/* Tilt: the panel turns slightly towards the pointer. */
-[data-tilt] {
-  transform: perspective(1200px) rotateX(var(--rx, 0deg))
-    rotateY(var(--ry, 0deg));
-  transition: transform 700ms var(--ease-out);
-}
-
-[data-tilt][data-pointer-inside] {
-  transition-duration: 150ms;
+/* 4% to each side: the word moves 8% of its width in total while the
+   section crosses the screen. */
+@keyframes drift {
+  from {
+    transform: translateX(4%);
+  }
+  to {
+    transform: translateX(-4%);
+  }
 }
 
 /* Magnetic: the element is pulled a little towards the pointer. It uses the
@@ -393,20 +547,23 @@ body::after {
    feedback (scale). */
 [data-magnetic] {
   translate: var(--tx, 0px) var(--ty, 0px);
-  transition: translate 450ms var(--ease-out);
+  transition:
+    translate 450ms var(--ease-out),
+    background-color 200ms var(--ease-out),
+    border-color 200ms var(--ease-out),
+    transform 150ms var(--ease-out);
 }
 
 [data-magnetic][data-pointer-inside] {
-  transition-duration: 120ms;
+  transition-duration: 120ms, 200ms, 200ms, 150ms;
 }
 
 /* -------------------------------------------------------------------------- */
 /* Page transitions                                                           */
 /* -------------------------------------------------------------------------- */
 
-/* Moving between the English and Croatian pages cross-fades instead of
-   flashing white (cross-document view transitions; other browsers just load
-   the page). */
+/* Moving between pages and languages cross-fades instead of flashing
+   (cross-document view transitions; other browsers just load the page). */
 @media (prefers-reduced-motion: no-preference) {
   @view-transition {
     navigation: auto;

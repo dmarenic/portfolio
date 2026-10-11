@@ -10,6 +10,8 @@ import { Skills } from "@/components/Skills/Skills";
 import { ExperienceAndEducation } from "@/components/Timeline/Timeline";
 import { About } from "@/components/About/About";
 import { Contact } from "@/components/Contact/Contact";
+import { Dock } from "@/components/Dock/Dock";
+import styles from "./page.module.css";
 
 export async function generateMetadata({
   params,
@@ -33,13 +35,28 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     <>
       <Header locale={locale} path="/" />
       <main id="main">
-        <Hero locale={locale} />
-        <Projects locale={locale} />
+        {/* The hero is pinned (sticky) only inside this wrapper: while the
+            projects panel slides over it, and not a pixel longer. */}
+        <div className={styles.cover}>
+          <Hero locale={locale} />
+          <Projects locale={locale} />
+        </div>
         <Skills locale={locale} />
         <ExperienceAndEducation locale={locale} />
-        <About locale={locale} />
-        <Contact locale={locale} />
+        {/* Contact lies underneath About and is pinned to the bottom of the
+            screen only inside this wrapper, while About scrolls away. */}
+        <div>
+          <About locale={locale} />
+          <Contact locale={locale} />
+        </div>
       </main>
+      <Dock
+        label={ui.nav.label[locale]}
+        items={ui.nav.items.map((id) => ({
+          id,
+          label: ui.nav.labels[id][locale],
+        }))}
+      />
     </>
   );
 }

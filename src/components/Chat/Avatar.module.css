@@ -1,0 +1,100 @@
+/* --size is set by Avatar.tsx (40px in the header, 96px in the empty chat). */
+.avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--size);
+  height: var(--size);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.picture {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* The monogram uses the same font settings as the name in the hero. */
+.monogram {
+  font-size: calc(var(--size) * 0.4);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  /* Optical centering: the pair sits a little left of the middle without it. */
+  translate: 0.03em 0;
+}
+
+@supports (-webkit-text-stroke: 1px) {
+  .outline {
+    color: transparent;
+    -webkit-text-stroke: max(1px, 0.045em) var(--ink);
+  }
+}
+
+/* The ring: a thin circle in the accent colour just outside the avatar. */
+.avatar::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Idle: the ring slowly appears, grows a little and fades, like breathing. */
+  .avatar::after {
+    animation: breathe 3.6s ease-in-out infinite;
+  }
+
+  /* Writing: half of the ring is drawn (a conic gradient cut to a ring by
+     the mask) and turns once a second. */
+  .avatar[data-typing]::after {
+    border: 0;
+    background: conic-gradient(var(--accent), transparent 60%);
+    -webkit-mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - 2px),
+      #000 calc(100% - 2px)
+    );
+    mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - 2px),
+      #000 calc(100% - 2px)
+    );
+    opacity: 1;
+    animation: turn 1s linear infinite;
+  }
+}
+
+/* With reduced motion the writing ring is simply shown, without turning. */
+@media (prefers-reduced-motion: reduce) {
+  .avatar[data-typing]::after {
+    opacity: 1;
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes turn {
+  to {
+    transform: rotate(1turn);
+  }
+}

@@ -1,0 +1,241 @@
+/* Heading and text on the left, the buttons on the right; on narrow
+   screens the buttons wrap under the heading. */
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+
+.head {
+  min-width: 0;
+  flex: 1 1 18rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Round buttons with a border, like the theme button in the top bar. */
+.button {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color 200ms var(--ease-out),
+    transform 150ms var(--ease-out);
+}
+
+.button:hover {
+  border-color: var(--ink);
+}
+
+.button:active {
+  transform: scale(0.94);
+}
+
+/* The stop / start button is a little smaller than the arrows. With
+   reduced motion nothing rotates by itself, so it is not needed. */
+.rotation {
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-right: 0.35rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rotation {
+    display: none;
+  }
+}
+
+/*
+ * The slides. They all sit in the same grid cell, so the carousel is as tall
+ * as the tallest slide. overflow: clip hides a slide while it slides in or
+ * out. touch-action: pan-y leaves vertical scrolling to the browser and
+ * gives sideways finger movements to the swipe code in Carousel.tsx.
+ */
+.slides {
+  display: grid;
+  margin-top: 1.5rem;
+  overflow: clip;
+  touch-action: pan-y;
+}
+
+.slide {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
+.slide[data-state="hidden"],
+.slide[data-state="leaving"] {
+  visibility: hidden;
+}
+
+/*
+ * Changing slides: the new slide slides in from the side it comes from while
+ * the old one slides out the other way, with the same curve as the other
+ * animations on the site. data-animate is missing on the first render, so
+ * nothing moves when the page loads.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .slide[data-animate] {
+    animation: 550ms var(--ease-reveal) both;
+  }
+
+  .slide[data-animate][data-state="current"][data-direction="next"] {
+    animation-name: in-from-right;
+  }
+
+  .slide[data-animate][data-state="current"][data-direction="previous"] {
+    animation-name: in-from-left;
+  }
+
+  .slide[data-animate][data-state="leaving"][data-direction="next"] {
+    animation-name: out-to-left;
+  }
+
+  .slide[data-animate][data-state="leaving"][data-direction="previous"] {
+    animation-name: out-to-right;
+  }
+}
+
+/* With reduced motion the slides only cross-fade. */
+@media (prefers-reduced-motion: reduce) {
+  .slide[data-animate][data-state="current"] {
+    animation: fade-in 300ms var(--ease-out) both;
+  }
+
+  .slide[data-animate][data-state="leaving"] {
+    animation: fade-out 300ms var(--ease-out) both;
+  }
+}
+
+/* The leaving slide stays visible while it moves and is hidden at the end.
+   The 1.5rem keeps a small gap between the two slides. */
+@keyframes in-from-right {
+  from {
+    transform: translateX(calc(100% + 1.5rem));
+  }
+}
+
+@keyframes in-from-left {
+  from {
+    transform: translateX(calc(-100% - 1.5rem));
+  }
+}
+
+@keyframes out-to-left {
+  from {
+    visibility: visible;
+  }
+  to {
+    visibility: hidden;
+    transform: translateX(calc(-100% - 1.5rem));
+  }
+}
+
+@keyframes out-to-right {
+  from {
+    visibility: visible;
+  }
+  to {
+    visibility: hidden;
+    transform: translateX(calc(100% + 1.5rem));
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    visibility: visible;
+  }
+  to {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Position under the slides: three thin parts                                */
+/* -------------------------------------------------------------------------- */
+
+.progress {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* The button is taller than the line it shows, so it is easy to click. */
+.segment {
+  position: relative;
+  flex: 1;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.segment::before,
+.fill {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 3px;
+  border-radius: 999px;
+  translate: 0 -50%;
+}
+
+.segment::before {
+  background: var(--line);
+  transition: background-color 200ms var(--ease-out);
+}
+
+.segment:hover::before,
+.segment[aria-current="true"]::before {
+  background: color-mix(in srgb, var(--ink) 30%, var(--line));
+}
+
+/* The active part fills with the accent colour over the interval. It is
+   paused unless the carousel is rotating (data-running), and the next slide
+   comes when the animation ends (see Carousel.tsx). */
+.fill {
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: fill var(--interval) linear forwards paused;
+}
+
+.fill[data-running] {
+  animation-play-state: running;
+}
+
+@keyframes fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* With reduced motion nothing rotates: the active part is simply full. */
+@media (prefers-reduced-motion: reduce) {
+  .fill {
+    animation: none;
+    transform: none;
+  }
+}

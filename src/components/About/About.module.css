@@ -1,10 +1,8 @@
 .grid {
   display: grid;
-  grid-template-columns: minmax(0, 28rem) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 26rem) minmax(0, 1fr);
   gap: 2.5rem clamp(2.5rem, 6vw, 5.5rem);
   align-items: center;
-  padding-block: clamp(3rem, 7vw, 5.5rem) clamp(3.5rem, 8vw, 6rem);
-  border-top: 1px solid var(--line);
 }
 
 @media (max-width: 59.99rem) {
@@ -17,34 +15,65 @@
    houses behind them. */
 .photo {
   width: 100%;
-  max-width: 28rem;
+  max-width: 26rem;
   height: auto;
   aspect-ratio: 4 / 5;
   object-fit: cover;
   object-position: 65% 60%;
-  border-radius: var(--radius-large);
+  border-radius: var(--radius-card);
   /* Shown while the photo loads. */
   background: var(--line);
 }
 
-.title {
-  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.4rem);
-  font-weight: 800;
-  font-stretch: 118%;
-  line-height: 1.1;
-  letter-spacing: -0.025em;
-}
-
 .text {
-  max-width: 36rem;
+  max-width: 38rem;
 }
 
-.text p {
+.text p + p {
   margin-top: 1rem;
 }
 
-.text p:first-of-type {
-  margin-top: 1.5rem;
-  font-size: 1.15rem;
-  line-height: 1.55;
+/* The first paragraph introduces me, so it is set larger. */
+.text p:first-child {
+  margin-bottom: 1.75rem;
+  font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.65rem);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+
+.text p:not(:first-child) {
+  color: var(--muted);
+}
+
+/* The last part reads like a statement: a little larger than the text
+   above it (smaller than the first paragraph) and in the full text colour. */
+.text p.statement {
+  margin-top: 1.75rem;
+  color: var(--ink);
+  font-size: clamp(1.15rem, 1rem + 0.45vw, 1.35rem);
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: -0.015em;
+}
+
+/*
+ * Highlighted words. On the light panel the accent is too light for text,
+ * so it is a marker behind dark text (box-decoration-break keeps the marker
+ * rounded on both lines when a highlight breaks across lines). On the dark
+ * panel of the dark theme the words themselves take the accent colour.
+ */
+.statement mark {
+  padding: 0.05em 0.2em;
+  border-radius: 0.2em;
+  background: var(--accent);
+  color: var(--accent-ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+:global(:root[data-theme="dark"]) .statement mark {
+  padding: 0;
+  background: none;
+  color: var(--accent);
 }

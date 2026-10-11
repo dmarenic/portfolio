@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   check:
-    name: Lint, type check and build
+    name: Lint, type check, test and build
     runs-on: ubuntu-latest
 
     steps:
@@ -25,4 +25,5 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm run typecheck
+      - run: npm test
       - run: npm run build

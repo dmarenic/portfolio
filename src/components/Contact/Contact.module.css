@@ -1,61 +1,104 @@
-/* A band in the panel colour of the same theme, from edge to edge. */
-.band {
-  padding-block: clamp(3.5rem, 8vw, 6rem);
-  border-block: 1px solid var(--line);
-  background: var(--surface);
+/* The large line: the first words as an outline, like the first name in the
+   hero, and the last word solid in the accent colour. The outline is drawn
+   like the large words of the other sections (see .word in
+   Section.module.css): a stroke twice as wide with the panel colour filled
+   over its inner half, so no lines show where parts of the letters overlap. */
+@supports (-webkit-text-stroke: 1px) {
+  .outline {
+    color: var(--paper);
+    -webkit-text-stroke: max(3px, 0.024em) var(--ink);
+    paint-order: stroke fill;
+  }
 }
 
-.title {
-  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.4rem);
-  font-weight: 800;
-  font-stretch: 118%;
-  line-height: 1.1;
-  letter-spacing: -0.025em;
+.highlight {
+  color: var(--accent);
+}
+
+/* Text on the left, links under the email address. The column is exactly
+   as wide as the content (minmax(0, 1fr)), so a wide child cannot stretch
+   it past the screen. The body is a size container, so 100cqi inside it is
+   the width of the content (see .emailRow). */
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  justify-items: start;
+  container-type: inline-size;
 }
 
 .text {
-  max-width: 38rem;
-  margin-top: 0.75rem;
+  max-width: 34rem;
   color: var(--muted);
 }
 
-/* The email address is the main action of the section, set large. Sized so
-   the whole address fits on one line, down to 360 px screens. */
+/*
+ * The email address ends at the right edge of the last button under it, in
+ * both languages (the CV buttons have different labels), without JavaScript:
+ *
+ * 1. .actions is as wide as its widest child (max-content), but never wider
+ *    than the screen.
+ * 2. .emailRow has width 0, so only the row of buttons decides that width,
+ *    and min-width 100% then stretches it to the same width. It is a size
+ *    container, so 100cqi inside it is the width of the row of buttons.
+ * 3. The address is 12.98 times as wide as its font size (measured for
+ *    Geist 600 with this letter spacing), so 100 / 12.98 = 7.7cqi makes it
+ *    exactly as wide as the buttons.
+ *
+ * On phones the buttons wrap and .actions is as wide as the screen. The
+ * arrow right of the address would then stick out, so the font size is also
+ * limited to 1em, set on .emailRow: 7cqi of the content width, which fits
+ * the address and the arrow (14.2 times the font size together).
+ */
+.actions {
+  display: grid;
+  gap: 1.25rem;
+  width: max-content;
+  max-width: 100%;
+}
+
+.emailRow {
+  width: 0;
+  min-width: 100%;
+  container-type: inline-size;
+  font-size: 7cqi;
+}
+
 .email {
-  display: inline-block;
-  margin-top: 1.5rem;
-  font-size: clamp(1.05rem, 4.4vw, 3rem);
-  font-weight: 800;
-  font-stretch: 118%;
-  letter-spacing: -0.025em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  /* Without container query units: the size used before. */
+  font-size: clamp(1.15rem, 4.2vw, 2.6rem);
+  font-size: min(7.7cqi, 1em);
+  font-weight: 600;
+  letter-spacing: -0.03em;
   line-height: 1.15;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
   text-decoration-thickness: 2px;
   text-underline-offset: 0.18em;
 }
 
+.email svg {
+  flex-shrink: 0;
+  width: 0.8em;
+  height: 0.8em;
+  transition: transform 300ms var(--ease-out);
+}
+
 .email:hover {
-  color: var(--request);
+  color: var(--accent);
+}
+
+.email:hover svg {
+  transform: translate(3px, -3px);
 }
 
 .links {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.75rem;
-  margin-top: 1.75rem;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
   padding: 0;
   list-style: none;
-  font-weight: 600;
-}
-
-.links a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding-block: 0.4rem;
-}
-
-.links svg {
-  flex-shrink: 0;
-  color: var(--request);
 }
