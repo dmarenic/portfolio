@@ -23,8 +23,14 @@ export default async function Image({
   // "!": the trivia project is always defined in site.ts.
   const project = projects.find((p) => p.id === "trivia")!;
 
+  // "ONLINE TRIVIA" as an outline and "QUIZ" solid, like the heading of the
+  // case study page.
+  const words = project.name.toUpperCase().split(" ");
+  const last = words.pop() ?? "";
+
   return renderOgImage({
-    title: project.name,
+    lines: [{ text: words.join(" "), outline: true }, { text: last }],
+    fontSize: 124,
     subtitle: project.context[language],
     footer: new URL(siteUrl).host,
   });

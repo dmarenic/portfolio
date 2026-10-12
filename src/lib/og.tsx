@@ -2,46 +2,60 @@ import { ImageResponse } from "next/og";
 
 /*
  * Open Graph images: the preview card shown when a link to the site is shared
- * on LinkedIn or elsewhere. They are generated once, at build time, in the
- * site's colours, with a small sequence diagram as the visual.
+ * on LinkedIn or elsewhere. They are generated once, at build time, and look
+ * like the top of the home page: the light page colour, a name set large with
+ * the first part as an outline and the rest solid, and the lime accent.
  */
 
 export const ogSize = { width: 1200, height: 630 };
 
+// The colours of the light theme (see globals.css).
 const colors = {
-  background: "#121a27",
-  text: "#e3e8f0",
-  muted: "#a3afc1",
-  line: "#2e3c52",
-  request: "#8ea9ff",
-  response: "#5ed3b6",
+  paper: "#ececea",
+  surface: "#f7f7f5",
+  ink: "#161816",
+  muted: "#5a5d59",
+  line: "#d3d4d0",
+  accent: "#c8e05a",
+  status: "#2fa36b",
 };
 
 /**
- * Downloads Archivo from Google Fonts during the build, limited to the
- * characters in `text`. ImageResponse needs the raw font file, and asking for
- * a single width and weight returns a small static TrueType font.
+ * Downloads Geist, the font of the site, from Google Fonts during the build,
+ * limited to the characters in `text`. ImageResponse needs the raw font file,
+ * and asking for a single weight returns a small static TrueType font.
  */
-async function loadArchivo(text: string, weight: number, width: number) {
-  const url = `https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@${width},${weight}&text=${encodeURIComponent(text)}`;
+async function loadGeist(text: string, weight: number) {
+  const url = `https://fonts.googleapis.com/css2?family=Geist:wght@${weight}&text=${encodeURIComponent(text)}`;
   const css = await (await fetch(url)).text();
   const source = css.match(/src: url\((.+?)\) format\('(opentype|truetype)'\)/);
   if (!source)
-    throw new Error("Could not load Archivo for the Open Graph image.");
+    throw new Error("Could not load Geist for the Open Graph image.");
   return (await fetch(source[1])).arrayBuffer();
 }
 
 type OgImageProps = {
-  title: string;
+  // The large lines, for example "DOMINIK" as an outline and "MARENIĆ" solid.
+  // Pass them in capitals: the font is downloaded with only these letters.
+  lines: { text: string; outline?: boolean }[];
+  // Size of the large lines, chosen so the longest one fits the width.
+  fontSize: number;
   subtitle: string;
+  // The "looking for work" line with the green dot, as in the top bar.
+  status?: string;
   footer: string;
 };
 
-export async function renderOgImage({ title, subtitle, footer }: OgImageProps) {
-  const text = `${title}${subtitle}${footer}`;
+export async function renderOgImage({
+  lines,
+  fontSize,
+  subtitle,
+  status = "",
+  footer,
+}: OgImageProps) {
   const [display, body] = await Promise.all([
-    loadArchivo(text, 800, 125),
-    loadArchivo(text, 500, 100),
+    loadGeist(lines.map((line) => line.text).join(""), 700),
+    loadGeist(`${subtitle}${status}${footer}`, 500),
   ]);
 
   return new ImageResponse(
@@ -50,100 +64,118 @@ export async function renderOgImage({ title, subtitle, footer }: OgImageProps) {
         width: "100%",
         height: "100%",
         display: "flex",
+        flexDirection: "column",
         justifyContent: "space-between",
         padding: 72,
-        background: colors.background,
-        color: colors.text,
-        fontFamily: "Archivo",
+        background: colors.paper,
+        color: colors.ink,
+        fontFamily: "Geist",
+        fontWeight: 500,
       }}
     >
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
           justifyContent: "space-between",
-          width: 690,
+          alignItems: "center",
         }}
       >
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        {status ? (
           <div
             style={{
-              fontFamily: "Archivo Expanded",
-              fontSize: 76,
-              fontWeight: 800,
-              lineHeight: 1.02,
-              letterSpacing: -2,
+              display: "flex",
+              alignItems: "center",
+              gap: 14,
+              padding: "12px 26px",
+              border: `1px solid ${colors.line}`,
+              borderRadius: 999,
+              background: colors.surface,
+              fontSize: 24,
             }}
           >
-            {title}
+            <div
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: 999,
+                background: colors.status,
+              }}
+            />
+            {status}
           </div>
-          <div style={{ marginTop: 28, fontSize: 36, color: colors.muted }}>
-            {subtitle}
-          </div>
-        </div>
-        <div style={{ fontSize: 28, color: colors.request }}>{footer}</div>
+        ) : (
+          <div />
+        )}
+        {/* The DM monogram, the same drawing as the favicon (app/icon.svg). */}
+        <svg width="64" height="64" viewBox="0 0 32 32">
+          <rect width="32" height="32" rx="7" fill={colors.ink} />
+          <path
+            d="M5 9h4.5a7 7 0 0 1 0 14H5z"
+            fill="none"
+            stroke={colors.paper}
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M18.5 23V9h2.9l1.9 6.4 1.9-6.4H28v14h-2.4v-8.8l-1.4 4.8h-1.9l-1.4-4.8V23z"
+            fill={colors.paper}
+          />
+        </svg>
       </div>
 
-      {/* Three lifelines with messages between them, like the hero diagram. */}
-      <svg width="300" height="486" viewBox="0 0 300 486">
-        {[30, 150, 270].map((x) => (
-          <g key={x}>
-            <rect
-              x={x - 26}
-              y="0"
-              width="52"
-              height="30"
-              rx="7"
-              fill={colors.line}
-            />
-            <line
-              x1={x}
-              y1="30"
-              x2={x}
-              y2="486"
-              stroke={colors.line}
-              strokeWidth="3"
-            />
-          </g>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {lines.map((line) => (
+          <div
+            key={line.text}
+            style={{
+              fontWeight: 700,
+              fontSize,
+              // A little looser than in the hero, so the accent on Ć stays
+              // clear of the line above it.
+              lineHeight: 1,
+              letterSpacing: -0.045 * fontSize,
+              // The outline: the image generator draws no stroke around
+              // transparent text, so the letters are filled with the page
+              // colour instead. The fill covers the inner half of the
+              // stroke, so the stroke is set twice as wide as it should look.
+              ...(line.outline
+                ? {
+                    color: colors.paper,
+                    WebkitTextStroke: `${2 * Math.max(1.5, fontSize * 0.012)}px ${colors.ink}`,
+                  }
+                : {}),
+            }}
+          >
+            {line.text}
+          </div>
         ))}
-        {[
-          { y: 90, from: 30, to: 150, color: colors.request },
-          { y: 160, from: 150, to: 30, color: colors.response },
-          { y: 230, from: 270, to: 150, color: colors.request },
-          { y: 300, from: 150, to: 270, color: colors.response },
-          { y: 370, from: 30, to: 150, color: colors.request },
-          { y: 440, from: 150, to: 270, color: colors.response },
-        ].map(({ y, from, to, color }) => {
-          const direction = to > from ? 1 : -1;
-          return (
-            <g key={y}>
-              <line
-                x1={from}
-                y1={y}
-                x2={to - direction * 12}
-                y2={y}
-                stroke={color}
-                strokeWidth="5"
-              />
-              <path
-                d={`M${to} ${y} l${-direction * 16} -9 v18 z`}
-                fill={color}
-              />
-            </g>
-          );
-        })}
-      </svg>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ fontSize: 34, letterSpacing: -0.6 }}>{subtitle}</div>
+        <div
+          style={{
+            padding: "12px 26px",
+            borderRadius: 999,
+            background: colors.accent,
+            fontSize: 24,
+          }}
+        >
+          {footer}
+        </div>
+      </div>
     </div>,
     {
       ...ogSize,
       fonts: [
-        {
-          name: "Archivo Expanded",
-          data: display,
-          weight: 800,
-          style: "normal",
-        },
-        { name: "Archivo", data: body, weight: 500, style: "normal" },
+        { name: "Geist", data: display, weight: 700, style: "normal" },
+        { name: "Geist", data: body, weight: 500, style: "normal" },
       ],
     },
   );
